@@ -31,6 +31,7 @@ export class AuthController {
   }
 
   @ApiOkResponse({ type: User })
+  @UseInterceptors(MongooseClassSerializerInterceptor(User))
   @ApiBearerAuth()
   @Get('getme')
   @UseGuards(AuthGuard())
