@@ -23,6 +23,7 @@ export class UsersController {
   //   return this.usersService.create(createUserDto);
   // }
 
+  @ApiOkResponse({ type: User, isArray: true })
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @UseInterceptors(MongooseClassSerializerInterceptor(User))

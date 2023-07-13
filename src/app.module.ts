@@ -6,7 +6,7 @@ import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot('mongodb://localhost:27017', {dbName: 'weedo'}),
+    MongooseModule.forRoot('mongodb://mongo:BOOx14SDyF36j85ffnOl@containers-us-west-6.railway.app:6949', {dbName: 'weedo'}),
     UsersModule
   ],
   controllers: [],

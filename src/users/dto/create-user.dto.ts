@@ -3,6 +3,12 @@ import { IsEmail, IsNotEmpty } from "class-validator";
 import { RolesEnum } from "src/constants";
 
 export class CreateUserDto {
+    @ApiProperty()
+    firstName: string;
+
+    @ApiProperty()
+    lastName: string;
+
     @IsEmail()
     @IsNotEmpty()
     @ApiProperty()
