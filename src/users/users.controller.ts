@@ -43,6 +43,7 @@ export class UsersController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
+  @UsePipes(ValidationPipe)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);

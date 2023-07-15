@@ -18,6 +18,12 @@ export class CreateUserDto {
     @ApiProperty()
     password: string;
 
+    @ApiProperty()
+    phone: string;
+
+    @ApiProperty()
+    location: string;
+
     @IsNotEmpty()
     @ApiProperty({
         enum: RolesEnum,

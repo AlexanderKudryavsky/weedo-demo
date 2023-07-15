@@ -1,50 +1,68 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import * as mongoose from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { RolesEnum } from 'src/constants';
+import { Store } from "../../stores/entities/store.entity";
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({ timestamps: true})
 export class User {
 
     @ApiProperty()
-    @Transform(({ value }) => value.toString())
-    // @Exclude()
-    // @Prop({ type: SchemaTypes.ObjectId })
+    @Transform(({ value }) => {
+        console.log(12121212, value);
+        return value.toString()
+    })
     _id: string;
 
-    // @Expose()
-    // get id(): String { return this._id ? `${this._id}` : undefined }
-
     @ApiProperty()
-    @Prop()
+    @Prop({type: mongoose.Schema.Types.String})
     firstName: string;
 
     @ApiProperty()
-    @Prop()
+    @Prop({type: mongoose.Schema.Types.String})
     lastName: string;
 
     @ApiProperty()
-    @Prop({ unique: true })
+    @Prop({ unique: true, type: mongoose.Schema.Types.String })
     email: string;
 
-    @ApiProperty({enum: RolesEnum})
+    @ApiProperty()
+    @Prop({ unique: true, type: mongoose.Schema.Types.String })
+    phone: string;
+
+    @ApiProperty()
     @Prop()
+    location: string;
+
+    @ApiProperty()
+    @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Store'}]})
+    favoritesStores: Array<Store>
+
+    @ApiProperty({enum: RolesEnum})
+    @Prop({type: mongoose.Schema.Types.String})
     role: RolesEnum
 
-    @Prop()
-    @Exclude()
+    @Prop({type: mongoose.Schema.Types.String})
+    @Exclude({toPlainOnly: true})
     password: string;
 
     @Prop()
     @Exclude()
     __v: number;
 
-    @Prop({select: false})
+    @Prop({select: false, type: mongoose.Schema.Types.String})
     refreshToken: string;
+
+    @ApiProperty()
+    createdAt: Date;
+
+    @ApiProperty()
+    updatedAt: Date;
 
     validatePassword(password: string): boolean {
         return bcrypt.compareSync(password, this.password);

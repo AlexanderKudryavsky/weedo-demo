@@ -8,7 +8,7 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel('User') private userModel: Model<User>,
+    @InjectModel(User.name) private userModel: Model<User>,
   ){}
 
   create(createUserDto: CreateUserDto) {
@@ -16,12 +16,12 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userModel.find();
+    return this.userModel.find().exec();
   }
 
   async findOne(id: string): Promise<User> {
     try {
-      const res = await this.userModel.findOne({_id: id});
+      const res = await this.userModel.findById(id).exec();
       console.log(5555555, res._id);
       return res;
     } catch (error) {

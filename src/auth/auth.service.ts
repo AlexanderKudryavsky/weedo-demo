@@ -9,7 +9,7 @@ import { TokenResponse } from './types';
 import { Model } from "mongoose";
 // import { CreateUserDto } from '../users/dto/createa-user.dto';
 import * as moment from 'moment';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserDocument } from "src/users/entities/user.entity";
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
@@ -22,7 +22,7 @@ export class AuthService {
 
   async findUser(authCredentials: AuthCredentialsDto): Promise<string | null> {
     const { email, password } = authCredentials;
-    const user = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne<UserDocument>({ email });
     if (user && await user.validatePassword(password)) {
       return user._id;
     }
