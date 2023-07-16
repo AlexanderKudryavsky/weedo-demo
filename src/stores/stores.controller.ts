@@ -9,12 +9,12 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
-  Res
+  Res, Query
 } from "@nestjs/common";
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
@@ -38,11 +38,21 @@ export class StoresController {
   }
 
   @ApiOkResponse({ type: Store, isArray: true })
+  @ApiQuery({
+    name: "limit",
+    type: String,
+    required: false
+  })
+  @ApiQuery({
+    name: "offset",
+    type: String,
+    required: false
+  })
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
-  findAll() {
-    return this.storesService.findAll();
+  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string) {
+    return this.storesService.findAll({limit, offset});
   }
 
   @ApiOkResponse({ type: Store })

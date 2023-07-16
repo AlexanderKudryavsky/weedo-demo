@@ -16,8 +16,8 @@ export class StoresService {
     return store.save();
   }
 
-  async findAll() {
-    return this.storeModel.find().exec();
+  async findAll({limit, offset}) {
+    return this.storeModel.find({}, {},{limit, skip: offset}).exec();
   }
 
   async findOne(id: string) {

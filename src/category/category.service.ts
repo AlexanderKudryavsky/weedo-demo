@@ -16,8 +16,8 @@ export class CategoryService {
     return category.save();
   }
 
-  async findAll() {
-    return this.categoryModel.find().exec();
+  async findAll({limit, offset}) {
+    return this.categoryModel.find({}, {},{limit, skip: offset}).exec();
   }
 
   async findOne(id: string) {

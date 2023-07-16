@@ -15,8 +15,8 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  findAll() {
-    return this.userModel.find().exec();
+  findAll({limit, offset}) {
+    return this.userModel.find({}, {},{limit, skip: offset}).exec();
   }
 
   async findOne(id: string): Promise<User> {

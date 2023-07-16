@@ -9,12 +9,12 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Res
+  Res, Query
 } from "@nestjs/common";
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { Category } from "./entities/category.entity";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { RolesEnum } from "../constants";
@@ -39,11 +39,21 @@ export class CategoryController {
   }
 
   @ApiOkResponse({ type: Category, isArray: true })
+  @ApiQuery({
+    name: "limit",
+    type: String,
+    required: false
+  })
+  @ApiQuery({
+    name: "offset",
+    type: String,
+    required: false
+  })
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string) {
+    return this.categoryService.findAll({limit, offset});
   }
 
   @ApiOkResponse({ type: Category })
