@@ -14,7 +14,6 @@ export class User {
 
     @ApiProperty()
     @Transform(({ value }) => {
-        console.log(12121212, value);
         return value.toString()
     })
     _id: string;

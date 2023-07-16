@@ -25,7 +25,7 @@ export class StoresService {
   }
 
   async update(id: string, updateStoreDto: UpdateStoreDto) {
-    return this.storeModel.findByIdAndUpdate(id, updateStoreDto).exec();
+    return this.storeModel.findByIdAndUpdate(id, updateStoreDto, {new: true}).exec();
   }
 
   async remove(id: string) {

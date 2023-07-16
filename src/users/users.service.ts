@@ -22,10 +22,8 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     try {
       const res = await this.userModel.findById(id).exec();
-      console.log(5555555, res._id);
       return res;
     } catch (error) {
-      console.log(565656)
       throw new BadRequestException(error.message);
     }
   }
