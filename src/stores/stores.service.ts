@@ -16,19 +16,19 @@ export class StoresService {
     return store.save();
   }
 
-  findAll() {
-    return `This action returns all stores`;
+  async findAll() {
+    return this.storeModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} store`;
+  async findOne(id: string) {
+    return this.storeModel.findById(id).exec();
   }
 
-  update(id: number, updateStoreDto: UpdateStoreDto) {
-    return `This action updates a #${id} store`;
+  async update(id: string, updateStoreDto: UpdateStoreDto) {
+    return this.storeModel.findByIdAndUpdate(id, updateStoreDto).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} store`;
+  async remove(id: string) {
+    return this.storeModel.deleteOne({_id: id}).exec();
   }
 }
