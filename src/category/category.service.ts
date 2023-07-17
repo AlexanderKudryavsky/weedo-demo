@@ -4,6 +4,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Category } from "./entities/category.entity";
+import { PaginationResult } from "../helpers/types";
 
 @Injectable()
 export class CategoryService {
@@ -16,8 +17,13 @@ export class CategoryService {
     return category.save();
   }
 
-  async findAll({limit, offset}) {
-    return this.categoryModel.find({}, {},{limit, skip: offset}).exec();
+  async findAll({limit, offset}): Promise<PaginationResult<Category>> {
+    const totalCount = await this.categoryModel.count().exec();
+    const results = await this.categoryModel.find({}, {},{limit, skip: offset}).exec();
+    return {
+      totalCount,
+      results,
+    };
   }
 
   async findOne(id: string) {

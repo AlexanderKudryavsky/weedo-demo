@@ -8,7 +8,7 @@ import { CreateUserDto } from "src/users/dto/create-user.dto";
 import { User } from "src/users/entities/user.entity";
 import { GetUser } from "./decorators/get-user.decorator";
 import { TokenResponse } from "./types";
-import { MongooseClassSerializerInterceptor } from "src/mongooseClassSerializer.interceptor";
+import { MongooseClassSerializerInterceptor } from "src/helpers/mongooseClassSerializer.interceptor";
 
 @ApiTags('Auth')
 @Controller('auth')

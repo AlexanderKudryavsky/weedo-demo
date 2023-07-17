@@ -5,7 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Store, StoreSchema } from "./entities/store.entity";
 import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
-import { jwtSecret } from "../constants";
+import { jwtSecret } from "../helpers/constants";
 
 @Module({
   imports: [

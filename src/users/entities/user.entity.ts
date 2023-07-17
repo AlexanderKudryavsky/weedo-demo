@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from "mongoose";
 import * as bcrypt from 'bcrypt';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Transform } from 'class-transformer';
-import { RolesEnum } from 'src/constants';
+import { Exclude, Transform, Type } from "class-transformer";
+import { RolesEnum } from 'src/helpers/constants';
 import { Store } from "../../stores/entities/store.entity";
 
 export type UserDocument = HydratedDocument<User>;
@@ -13,9 +13,8 @@ export type UserDocument = HydratedDocument<User>;
 export class User {
 
     @ApiProperty()
-    @Transform(({ value }) => {
-        return value.toString()
-    })
+    @Type(() => String)
+    @Transform(( value ) => new Types.ObjectId(value.obj._id.toString()))
     _id: string;
 
     @ApiProperty()

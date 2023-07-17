@@ -4,6 +4,7 @@ import { UpdateStoreDto } from './dto/update-store.dto';
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Store } from "./entities/store.entity";
+import { PaginationResult } from "../helpers/types";
 
 @Injectable()
 export class StoresService {
@@ -16,8 +17,13 @@ export class StoresService {
     return store.save();
   }
 
-  async findAll({limit, offset}) {
-    return this.storeModel.find({}, {},{limit, skip: offset}).exec();
+  async findAll({limit, offset}): Promise<PaginationResult<Store>> {
+    const totalCount = await this.storeModel.count().exec();
+    const results = await this.storeModel.find({}, {},{limit, skip: offset}).exec();
+    return {
+      results,
+      totalCount,
+    }
   }
 
   async findOne(id: string) {

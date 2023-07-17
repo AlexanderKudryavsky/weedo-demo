@@ -11,6 +11,7 @@ import {
   UseGuards,
   Res, Query
 } from "@nestjs/common";
+import { Response } from 'express';
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
@@ -18,9 +19,10 @@ import { ApiBearerAuth, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
-import { RolesEnum } from "../constants";
+import { RolesEnum } from "../helpers/constants";
 import { Store } from "./entities/store.entity";
-import { RemoveResult } from "../helpers/types";
+import { PaginationResult, RemoveResult } from "../helpers/types";
+import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 
 @ApiTags('Stores')
 @Controller('stores')
@@ -37,7 +39,7 @@ export class StoresController {
     return this.storesService.create(createStoreDto);
   }
 
-  @ApiOkResponse({ type: Store, isArray: true })
+  @ApiOkResponsePaginated(Store)
   @ApiQuery({
     name: "limit",
     type: String,
@@ -51,7 +53,7 @@ export class StoresController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
-  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string) {
+  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<Store>> {
     return this.storesService.findAll({limit, offset});
   }
 
@@ -77,7 +79,7 @@ export class StoresController {
   @Roles(RolesEnum.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string, @Res() response) {
+  async remove(@Param('id') id: string, @Res() response: Response) {
     const result = await this.storesService.remove(id);
     if (!result.acknowledged) {
       return response.status(400).send({success: false})

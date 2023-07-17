@@ -5,7 +5,7 @@ import { User, UserSchema } from './entities/user.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { jwtSecret } from 'src/constants';
+import { jwtSecret } from 'src/helpers/constants';
 
 @Module({
   imports: [

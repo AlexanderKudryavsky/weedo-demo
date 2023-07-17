@@ -3,7 +3,7 @@ import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
 import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
-import { jwtSecret } from "../constants";
+import { jwtSecret } from "../helpers/constants";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Category, CategorySchema } from "./entities/category.entity";
 

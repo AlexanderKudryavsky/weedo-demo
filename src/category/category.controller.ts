@@ -17,11 +17,12 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { Category } from "./entities/category.entity";
 import { Roles } from "../auth/decorators/roles.decorator";
-import { RolesEnum } from "../constants";
+import { RolesEnum } from "../helpers/constants";
 import { AuthGuard } from "@nestjs/passport";
+import { Response } from "express";
 import { RolesGuard } from "../auth/guards/roles.guard";
-import { Store } from "../stores/entities/store.entity";
-import { RemoveResult } from "../helpers/types";
+import { PaginationResult, RemoveResult } from "../helpers/types";
+import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 
 @ApiTags('Categories')
 @Controller('category')
@@ -38,7 +39,7 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
-  @ApiOkResponse({ type: Category, isArray: true })
+  @ApiOkResponsePaginated(Category)
   @ApiQuery({
     name: "limit",
     type: String,
@@ -52,7 +53,7 @@ export class CategoryController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
-  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string) {
+  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<Category>> {
     return this.categoryService.findAll({limit, offset});
   }
 
@@ -78,7 +79,7 @@ export class CategoryController {
   @Roles(RolesEnum.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string, @Res() response) {
+  async remove(@Param('id') id: string, @Res() response: Response) {
     const result = await this.categoryService.remove(id);
     if (!result.acknowledged) {
       return response.status(400).send({success: false})

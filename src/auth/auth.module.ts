@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtSecret } from 'src/constants';
+import { jwtSecret } from 'src/helpers/constants';
 import { JwtStrategy } from './jwt-strategy';
 import { JwtRefreshTokenStrategy } from './refresh-jwt-strategy';
 import { MongooseModule } from '@nestjs/mongoose';

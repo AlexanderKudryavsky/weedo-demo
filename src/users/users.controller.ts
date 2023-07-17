@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -10,18 +9,20 @@ import {
   UsePipes,
   ValidationPipe,
   UseInterceptors,
-  Query
+  Query, Res
 } from "@nestjs/common";
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiTags, ApiOkResponse, ApiQuery } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags, ApiQuery, ApiOkResponse } from "@nestjs/swagger";
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { RolesEnum } from 'src/constants';
+import { RolesEnum } from 'src/helpers/constants';
 import { User } from './entities/user.entity';
-import { MongooseClassSerializerInterceptor } from 'src/mongooseClassSerializer.interceptor';
+import { MongooseClassSerializerInterceptor } from 'src/helpers/mongooseClassSerializer.interceptor';
+import { PaginationResult, RemoveResult } from "../helpers/types";
+import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
+import { Response } from "express";
 
 @ApiTags('Users')
 @Controller('users')
@@ -36,7 +37,7 @@ export class UsersController {
   //   return this.usersService.create(createUserDto);
   // }
 
-  @ApiOkResponse({ type: User, isArray: true })
+  @ApiOkResponsePaginated(User)
   @ApiQuery({
     name: "limit",
     type: String,
@@ -51,7 +52,7 @@ export class UsersController {
   @UseGuards(AuthGuard())
   @UseInterceptors(MongooseClassSerializerInterceptor(User))
   @Get()
-  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string) {
+  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<User>> {
     return this.usersService.findAll({limit, offset});
   }
 
@@ -72,11 +73,16 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @ApiOkResponse({ type: RemoveResult })
   @ApiBearerAuth()
   @Roles(RolesEnum.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  async remove(@Param('id') id: string, @Res() response: Response) {
+    const result = await this.usersService.remove(id);
+    if (!result.acknowledged) {
+      return response.status(400).send({success: false})
+    }
+    return response.status(200).send({success: true})
   }
 }
