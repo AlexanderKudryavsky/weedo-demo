@@ -20,7 +20,7 @@ export class SubCategoryService {
 
   async findAll({limit, offset}): Promise<PaginationResult<SubCategory>> {
     const totalCount = await this.subCategoryModel.count().exec();
-    const results = await this.subCategoryModel.find({}, {},{limit, skip: offset}).populate(['category']).exec();
+    const results = await this.subCategoryModel.find({}, {},{limit, skip: offset}).populate(['category', 'products']).exec();
     return {
       totalCount,
       results,
@@ -28,7 +28,7 @@ export class SubCategoryService {
   }
 
   findOne(id: string) {
-    return this.subCategoryModel.findById(id).populate(['category']).exec();
+    return this.subCategoryModel.findById(id).populate(['category', 'products']).exec();
   }
 
   update(id: string, updateSubCategoryDto: UpdateSubCategoryDto) {

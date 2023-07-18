@@ -67,7 +67,8 @@ export class CategoryController {
 
   @ApiOkResponse({ type: Category })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard())
+  @Roles(RolesEnum.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
   @UsePipes(ValidationPipe)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
