@@ -20,11 +20,11 @@ export class Product {
   description: string;
 
   @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'Category'})
+  @Prop({type: mongoose.Schema.Types.ObjectId, ref: Category.name})
   category: Category
 
   @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'SubCategory'})
+  @Prop({type: mongoose.Schema.Types.ObjectId, ref: SubCategory.name})
   subCategory: SubCategory
 
   @ApiProperty()

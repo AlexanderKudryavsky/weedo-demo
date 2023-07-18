@@ -16,11 +16,11 @@ export class SubCategory {
   name: string;
 
   @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'Category'})
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Category.name })
   category: Category
 
   @ApiProperty()
-  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Product'}]})
+  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]})
   products: Array<Product>
 
   @ApiProperty()

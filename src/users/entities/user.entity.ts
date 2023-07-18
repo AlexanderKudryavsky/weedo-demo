@@ -38,7 +38,7 @@ export class User {
     location: string;
 
     @ApiProperty()
-    @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Store'}]})
+    @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Store.name}]})
     favoritesStores: Array<Store>
 
     @ApiProperty({enum: RolesEnum})
