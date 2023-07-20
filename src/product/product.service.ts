@@ -21,17 +21,17 @@ export class ProductService {
       ...createProductDto,
       category: subCategory.category._id,
       subCategory: createProductDto.subCategoryId,
+      store: subCategory.store._id,
     })
     await this.subCategoryService.update(createProductDto.subCategoryId, {
-      // @ts-ignore
       products: [product._id]
-    })
+    } as UpdateSubCategoryDto);
     return product;
   }
 
   async findAll({limit, offset}): Promise<PaginationResult<Product>> {
     const totalCount = await this.productModel.count().exec();
-    const results = await this.productModel.find({}, {},{limit, skip: offset}).populate(['category', 'subCategory']).exec();
+    const results = await this.productModel.find({}, {},{limit, skip: offset}).populate(['category', 'subCategory', 'store']).exec();
     return {
       totalCount,
       results,
@@ -39,7 +39,7 @@ export class ProductService {
   }
 
   findOne(id: string) {
-    return this.productModel.findById(id).populate(['category', 'subCategory']).exec();
+    return this.productModel.findById(id).populate(['category', 'subCategory', 'store']).exec();
   }
 
   update(id: string, updateProductDto: UpdateProductDto) {

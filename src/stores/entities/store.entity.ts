@@ -3,6 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import * as mongoose from 'mongoose';
 import { Product } from "../../product/entities/product.entity";
+import { SubCategory } from "../../sub-category/entities/sub-category.entity";
 
 @Schema({ timestamps: true})
 export class Store {
@@ -48,7 +49,11 @@ export class Store {
 
   @ApiProperty()
   @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Product.name}]})
-  products: Array<Product>
+  products: Array<Product>;
+
+  @ApiProperty()
+  @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: SubCategory.name}]})
+  subCategories: Array<Product>;
 
   @ApiProperty()
   createdAt: Date;

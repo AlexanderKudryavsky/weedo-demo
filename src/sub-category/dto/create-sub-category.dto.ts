@@ -8,6 +8,9 @@ export class CreateSubCategoryDto {
   @ApiProperty()
   categoryId: string;
 
+  @ApiProperty()
+  storeId: string;
+
   @Optional()
   @ApiProperty()
   products: Array<string>;

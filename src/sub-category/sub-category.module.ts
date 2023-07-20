@@ -6,6 +6,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { jwtSecret } from "../helpers/constants";
 import { MongooseModule } from "@nestjs/mongoose";
 import { SubCategory, SubCategorySchema } from "./entities/sub-category.entity";
+import { StoresModule } from "../stores/stores.module";
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { SubCategory, SubCategorySchema } from "./entities/sub-category.entity";
         expiresIn: '15m'
       },
     }),
-    MongooseModule.forFeature([{ name: SubCategory.name, schema: SubCategorySchema }])
+    MongooseModule.forFeature([{ name: SubCategory.name, schema: SubCategorySchema }]),
+    StoresModule,
   ],
   controllers: [SubCategoryController],
   providers: [SubCategoryService],

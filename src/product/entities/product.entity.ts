@@ -4,6 +4,7 @@ import { Transform } from "class-transformer";
 import * as mongoose from 'mongoose';
 import { Category } from "../../category/entities/category.entity";
 import { SubCategory } from "../../sub-category/entities/sub-category.entity";
+import { Store } from "../../stores/entities/store.entity";
 
 @Schema({ timestamps: true})
 export class Product {
@@ -26,6 +27,10 @@ export class Product {
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.ObjectId, ref: SubCategory.name})
   subCategory: SubCategory
+
+  @ApiProperty({type: () => Store})
+  @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'Store'})
+  store: Store
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.Number})

@@ -19,7 +19,12 @@ export class StoresService {
 
   async findAll({limit, offset}): Promise<PaginationResult<Store>> {
     const totalCount = await this.storeModel.count().exec();
-    const results = await this.storeModel.find({}, {},{limit, skip: offset}).exec();
+    const results = await this.storeModel.find({}, {},{limit, skip: offset}).populate({
+      path: 'subCategories',
+      populate: {
+        path: 'products'
+      }
+    }).exec();
     return {
       results,
       totalCount,
@@ -27,11 +32,22 @@ export class StoresService {
   }
 
   async findOne(id: string) {
-    return this.storeModel.findById(id).exec();
+    return this.storeModel.findById(id).populate({
+      path: 'subCategories',
+      populate: {
+        path: 'products'
+      }
+    }).exec();
   }
 
   async update(id: string, updateStoreDto: UpdateStoreDto) {
-    return this.storeModel.findByIdAndUpdate(id, updateStoreDto, {new: true}).exec();
+    const {subCategories, ...updateStorePayload} = updateStoreDto;
+    return this.storeModel.findByIdAndUpdate(id, {
+      $set: {
+        ...updateStorePayload
+      },
+      $addToSet: { subCategories: { $each: subCategories } },
+    }, {new: true}).exec();
   }
 
   async remove(id: string) {

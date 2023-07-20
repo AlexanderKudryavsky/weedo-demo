@@ -29,5 +29,8 @@ export class CreateStoreDto {
   workingHours: string;
 
   @ApiProperty()
-  products: Array<string>
+  products: Array<string>;
+
+  @ApiProperty()
+  subCategories: Array<string>;
 }
