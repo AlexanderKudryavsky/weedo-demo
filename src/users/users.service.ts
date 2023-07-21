@@ -1,15 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { PaginationResult } from "../helpers/types";
+import { StoresService } from "../stores/stores.service";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @Inject(StoresService) private readonly storesService: StoresService,
   ){}
 
   create(createUserDto: CreateUserDto) {
@@ -18,7 +20,7 @@ export class UsersService {
 
   async findAll({limit, offset}): Promise<PaginationResult<User>> {
     const totalCount = await this.userModel.count().exec();
-    const results = await this.userModel.find({}, {},{limit, skip: offset}).exec();
+    const results = await this.userModel.find({}, {},{limit, skip: offset}).populate({path: 'favoritesStores', select: '-subCategories -products'}).exec();
     return {
       totalCount,
       results,
@@ -27,7 +29,7 @@ export class UsersService {
 
   async findOne(id: string): Promise<User> {
     try {
-      const res = await this.userModel.findOne({_id: id}).exec()
+      const res = await this.userModel.findOne({_id: id}).populate({path: 'favoritesStores', select: '-subCategories -products'}).exec()
       return res;
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -40,5 +42,21 @@ export class UsersService {
 
   remove(id: string) {
     return this.userModel.deleteOne({_id: id}).exec();
+  }
+
+  async updateFavoritesStores(userId: string, storeId: string) {
+    const store = await this.storesService.findOne(storeId)
+    if (!store) {
+      throw new BadRequestException('Store not found')
+    }
+    return this.userModel.findByIdAndUpdate(userId, {
+      $addToSet: { favoritesStores: storeId },
+    }, { new: true });
+  };
+
+  async removeFavoritesStores(userId: string, storeId: string) {
+    return this.userModel.findByIdAndUpdate(userId, {
+      $pull: { favoritesStores: storeId },
+    }, { new: true })
   }
 }

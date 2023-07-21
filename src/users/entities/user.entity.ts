@@ -1,9 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { HydratedDocument, Types } from "mongoose";
+import { HydratedDocument } from "mongoose";
 import * as bcrypt from 'bcrypt';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Transform, Type } from "class-transformer";
 import { RolesEnum } from 'src/helpers/constants';
 import { Store } from "../../stores/entities/store.entity";
 
@@ -13,8 +12,6 @@ export type UserDocument = HydratedDocument<User>;
 export class User {
 
     @ApiProperty()
-    @Type(() => String)
-    @Transform(( value ) => new Types.ObjectId(value.obj._id.toString()))
     _id: string;
 
     @ApiProperty()
@@ -46,11 +43,9 @@ export class User {
     role: RolesEnum
 
     @Prop({type: mongoose.Schema.Types.String})
-    @Exclude({toPlainOnly: true})
     password: string;
 
     @Prop()
-    @Exclude()
     __v: number;
 
     @Prop({select: false, type: mongoose.Schema.Types.String})
@@ -65,11 +60,6 @@ export class User {
     validatePassword(password: string): boolean {
         return bcrypt.compareSync(password, this.password);
     }
-
-    constructor(partial: Partial<User>) {
-        Object.assign(this, partial);
-    }
-
 };
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -78,4 +68,11 @@ UserSchema.loadClass(User);
 
 UserSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, 10);
+})
+
+UserSchema.set('toJSON', {
+    transform: function(doc, ret, opt) {
+        delete ret['password']
+        return ret
+    }
 })

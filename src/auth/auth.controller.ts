@@ -8,7 +8,6 @@ import { CreateUserDto } from "src/users/dto/create-user.dto";
 import { User } from "src/users/entities/user.entity";
 import { GetUser } from "./decorators/get-user.decorator";
 import { TokenResponse } from "./types";
-import { MongooseClassSerializerInterceptor } from "src/helpers/mongooseClassSerializer.interceptor";
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -23,7 +22,6 @@ export class AuthController {
   }
 
   @ApiCreatedResponse({ type: User, description: 'User created successfully' })
-  @UseInterceptors(MongooseClassSerializerInterceptor(User))
   @Post('signup')
   @UsePipes(ValidationPipe)
   signUp(@Body() user: CreateUserDto) {
@@ -31,7 +29,6 @@ export class AuthController {
   }
 
   @ApiOkResponse({ type: User })
-  @UseInterceptors(MongooseClassSerializerInterceptor(User))
   @ApiBearerAuth()
   @Get('getme')
   @UseGuards(AuthGuard())

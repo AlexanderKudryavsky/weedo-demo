@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import * as mongoose from 'mongoose';
 import { Product } from "../../product/entities/product.entity";
 import { SubCategory } from "../../sub-category/entities/sub-category.entity";
@@ -8,6 +8,7 @@ import { SubCategory } from "../../sub-category/entities/sub-category.entity";
 @Schema({ timestamps: true})
 export class Store {
   @ApiProperty()
+  @Type(() => String)
   @Transform(({ value }) => value.toString())
   _id: string;
 

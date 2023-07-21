@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { jwtSecret } from 'src/helpers/constants';
+import { StoresModule } from "../stores/stores.module";
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { jwtSecret } from 'src/helpers/constants';
         expiresIn: '15m'
       },
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    StoresModule,
   ],
   controllers: [UsersController],
   providers: [UsersService]

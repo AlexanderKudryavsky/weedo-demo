@@ -19,7 +19,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesEnum } from 'src/helpers/constants';
 import { User } from './entities/user.entity';
-import { MongooseClassSerializerInterceptor } from 'src/helpers/mongooseClassSerializer.interceptor';
 import { PaginationResult, RemoveResult } from "../helpers/types";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 import { Response } from "express";
@@ -50,7 +49,6 @@ export class UsersController {
   })
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
-  @UseInterceptors(MongooseClassSerializerInterceptor(User))
   @Get()
   findAll(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<User>> {
     return this.usersService.findAll({limit, offset});
@@ -59,12 +57,12 @@ export class UsersController {
   @ApiOkResponse({ type: User })
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
-  @UseInterceptors(MongooseClassSerializerInterceptor(User))
   @Get(':id')
   findOne(@Param('id') id: string) {
       return this.usersService.findOne(id);
   }
 
+  @ApiOkResponse({ type: User })
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @UsePipes(ValidationPipe)
@@ -84,5 +82,23 @@ export class UsersController {
       return response.status(400).send({success: false})
     }
     return response.status(200).send({success: true})
+  }
+
+  @ApiOkResponse({ type: User })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @UsePipes(ValidationPipe)
+  @Patch(':id/favoriteStore/:storeId')
+  addFavoriteStore(@Param('id') id: string, @Param('storeId') storeId: string) {
+    return this.usersService.updateFavoritesStores(id, storeId);
+  }
+
+  @ApiOkResponse({ type: User })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @UsePipes(ValidationPipe)
+  @Delete(':id/favoriteStore/:storeId')
+  removeFavoriteStore(@Param('id') id: string, @Param('storeId') storeId: string) {
+    return this.usersService.removeFavoritesStores(id, storeId);
   }
 }
