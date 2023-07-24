@@ -64,3 +64,10 @@ export class Store {
 }
 
 export const StoreSchema = SchemaFactory.createForClass(Store);
+
+StoreSchema.index({
+  name: "text",
+  description: "text",
+  phone: "text",
+  website: "text",
+})

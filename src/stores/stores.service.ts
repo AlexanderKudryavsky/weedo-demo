@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
 import { Store } from "./entities/store.entity";
 import { PaginationResult } from "../helpers/types";
 
@@ -17,9 +17,13 @@ export class StoresService {
     return store.save();
   }
 
-  async findAll({limit, offset}): Promise<PaginationResult<Store>> {
-    const totalCount = await this.storeModel.count().exec();
-    const results = await this.storeModel.find({}, {},{limit, skip: offset}).populate({
+  async findAll({limit, offset, search}): Promise<PaginationResult<Store>> {
+    const filter: FilterQuery<Store> = {};
+    if (search) {
+      filter.$text = {$search: search}
+    }
+    const totalCount = await this.storeModel.count(filter).exec();
+    const results = await this.storeModel.find(filter, {},{limit, skip: offset}).populate({
       path: 'subCategories',
       populate: {
         path: 'products'
