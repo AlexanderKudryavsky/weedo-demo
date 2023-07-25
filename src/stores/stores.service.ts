@@ -23,7 +23,7 @@ export class StoresService {
     if (search) {
       filter.$text = { $search: search };
     }
-    if (user.address.location) {
+    if (user.address?.location) {
       filter.location = {
         $geoWithin: {
           $centerSphere: [[

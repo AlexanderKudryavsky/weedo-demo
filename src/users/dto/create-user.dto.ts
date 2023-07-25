@@ -23,22 +23,22 @@ class FullAddress {
     postalCode: string;
 }
 
-class Location {
+class UserLocation {
 
-    @ApiProperty()
+    @ApiProperty({default: 'Point'})
     type: 'Point';
 
-    @ApiProperty()
+    @ApiProperty({type: Number, isArray: true})
     coordinates: Array<number>;
 }
 
-class Address {
+class UserAddress {
 
     @ApiProperty()
     fullAddress: FullAddress;
 
     @ApiProperty()
-    location: Location;
+    location: UserLocation;
 }
 
 export class CreateUserDto {
@@ -61,7 +61,7 @@ export class CreateUserDto {
     phone: string;
 
     @ApiProperty()
-    address: Address;
+    address: UserAddress;
 
     @IsNotEmpty()
     @ApiProperty({

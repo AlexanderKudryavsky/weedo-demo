@@ -6,7 +6,7 @@ import { Product } from "../../product/entities/product.entity";
 import { SubCategory } from "../../sub-category/entities/sub-category.entity";
 
 @Schema({ _id: false })
-class Address {
+class StoreAddressSchema {
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})
@@ -34,13 +34,13 @@ class Address {
 }
 
 @Schema({ _id: false })
-class Location {
+class StoreLocationSchema {
 
-  @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.String})
+  @ApiProperty({default: 'Point'})
+  @Prop({type: mongoose.Schema.Types.String, default: 'Point'})
   type: 'Point';
 
-  @ApiProperty()
+  @ApiProperty({type: Number, isArray: true})
   @Prop({type: [{ type: mongoose.Schema.Types.Number }]})
   coordinates: Array<number>;
 }
@@ -69,8 +69,8 @@ export class Store {
   website: string;
 
   @ApiProperty()
-  @Prop({type: Address})
-  address: Address;
+  @Prop({type: StoreAddressSchema})
+  address: StoreAddressSchema;
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})
@@ -89,8 +89,8 @@ export class Store {
   workingHours: string;
 
   @ApiProperty()
-  @Prop({type: Location})
-  location: Location;
+  @Prop({type: StoreLocationSchema})
+  location: StoreLocationSchema;
 
   @ApiProperty()
   @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Product.name}]})

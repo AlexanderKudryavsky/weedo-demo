@@ -9,7 +9,7 @@ import { Store } from "../../stores/entities/store.entity";
 export type UserDocument = HydratedDocument<User>;
 
 @Schema({ _id: false })
-class FullAddress {
+class UserFullAddressSchema {
 
     @ApiProperty()
     @Prop({type: mongoose.Schema.Types.String})
@@ -37,27 +37,27 @@ class FullAddress {
 }
 
 @Schema({ _id: false })
-class Location {
+class UserLocationSchema {
 
-    @ApiProperty()
-    @Prop({type: mongoose.Schema.Types.String})
+    @ApiProperty({default: 'Point'})
+    @Prop({type: mongoose.Schema.Types.String, default: 'Point'})
     type: 'Point';
 
-    @ApiProperty()
+    @ApiProperty({type: Number, isArray: true})
     @Prop({type: [{ type: mongoose.Schema.Types.Number }]})
     coordinates: Array<number>;
 }
 
 @Schema({ _id: false })
-class Address {
+class UserAddressSchema {
 
     @ApiProperty()
-    @Prop({type: FullAddress})
-    fullAddress: FullAddress;
+    @Prop({type: UserFullAddressSchema})
+    fullAddress: UserFullAddressSchema;
 
     @ApiProperty()
-    @Prop({type: Location})
-    location: Location;
+    @Prop({type: UserLocationSchema})
+    location: UserLocationSchema;
 }
 
 @Schema({ timestamps: true})
@@ -83,8 +83,8 @@ export class User {
     phone: string;
 
     @ApiProperty()
-    @Prop({ type: Address })
-    address: Address;
+    @Prop({ type: UserAddressSchema })
+    address: UserAddressSchema;
 
     @ApiProperty()
     @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Store.name}]})
