@@ -23,6 +23,8 @@ import { RolesEnum } from "../helpers/constants";
 import { Store } from "./entities/store.entity";
 import { PaginationResult, RemoveResult } from "../helpers/types";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
+import { GetUser } from "../auth/decorators/get-user.decorator";
+import { User } from "../users/entities/user.entity";
 
 @ApiTags('Stores')
 @Controller('stores')
@@ -59,11 +61,12 @@ export class StoresController {
   @UseGuards(AuthGuard())
   @Get()
   findAll(
+    @GetUser() user: User,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
-    @Query('search') search?: string
+    @Query('search') search?: string,
   ): Promise<PaginationResult<Store>> {
-    return this.storesService.findAll({limit, offset, search});
+    return this.storesService.findAll({limit, offset, search, user});
   }
 
   @ApiOkResponse({ type: Store })

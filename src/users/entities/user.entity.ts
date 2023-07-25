@@ -8,6 +8,58 @@ import { Store } from "../../stores/entities/store.entity";
 
 export type UserDocument = HydratedDocument<User>;
 
+@Schema({ _id: false })
+class FullAddress {
+
+    @ApiProperty()
+    @Prop({type: mongoose.Schema.Types.String})
+    country: string;
+
+    @ApiProperty()
+    @Prop({type: mongoose.Schema.Types.String})
+    city: string;
+
+    @ApiProperty()
+    @Prop({type: mongoose.Schema.Types.String})
+    street: string;
+
+    @ApiProperty()
+    @Prop({type: mongoose.Schema.Types.String})
+    house: string;
+
+    @ApiProperty()
+    @Prop({type: mongoose.Schema.Types.String})
+    apartment: string;
+
+    @ApiProperty()
+    @Prop({type: mongoose.Schema.Types.String})
+    postalCode: string;
+}
+
+@Schema({ _id: false })
+class Location {
+
+    @ApiProperty()
+    @Prop({type: mongoose.Schema.Types.String})
+    type: 'Point';
+
+    @ApiProperty()
+    @Prop({type: [{ type: mongoose.Schema.Types.Number }]})
+    coordinates: Array<number>;
+}
+
+@Schema({ _id: false })
+class Address {
+
+    @ApiProperty()
+    @Prop({type: FullAddress})
+    fullAddress: FullAddress;
+
+    @ApiProperty()
+    @Prop({type: Location})
+    location: Location;
+}
+
 @Schema({ timestamps: true})
 export class User {
 
@@ -31,8 +83,8 @@ export class User {
     phone: string;
 
     @ApiProperty()
-    @Prop()
-    location: string;
+    @Prop({ type: Address })
+    address: Address;
 
     @ApiProperty()
     @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Store.name}]})
@@ -75,4 +127,8 @@ UserSchema.set('toJSON', {
         delete ret['password']
         return ret
     }
+})
+
+UserSchema.index({
+    'address.location': '2dsphere',
 })

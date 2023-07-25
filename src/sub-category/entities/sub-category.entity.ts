@@ -36,3 +36,7 @@ export class SubCategory {
 }
 
 export const SubCategorySchema = SchemaFactory.createForClass(SubCategory);
+
+SubCategorySchema.index({
+  name: "text"
+})

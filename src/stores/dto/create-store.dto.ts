@@ -1,5 +1,35 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+class Address {
+
+  @ApiProperty()
+  country: string;
+
+  @ApiProperty()
+  city: string;
+
+  @ApiProperty()
+  street: string;
+
+  @ApiProperty()
+  house: string;
+
+  @ApiProperty()
+  apartment: string;
+
+  @ApiProperty()
+  postalCode: string;
+}
+
+class Location {
+
+  @ApiProperty()
+  type: 'Point';
+
+  @ApiProperty()
+  coordinates: Array<number>;
+}
+
 export class CreateStoreDto {
   @ApiProperty()
   name: string;
@@ -14,7 +44,7 @@ export class CreateStoreDto {
   website: string;
 
   @ApiProperty()
-  address: string;
+  address: Address;
 
   @ApiProperty()
   image: string;
@@ -33,4 +63,7 @@ export class CreateStoreDto {
 
   @ApiProperty()
   subCategories: Array<string>;
+
+  @ApiProperty()
+  location: Location;
 }

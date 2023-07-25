@@ -5,6 +5,46 @@ import * as mongoose from 'mongoose';
 import { Product } from "../../product/entities/product.entity";
 import { SubCategory } from "../../sub-category/entities/sub-category.entity";
 
+@Schema({ _id: false })
+class Address {
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  country: string;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  city: string;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  street: string;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  house: string;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  apartment: string;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  postalCode: string;
+}
+
+@Schema({ _id: false })
+class Location {
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  type: 'Point';
+
+  @ApiProperty()
+  @Prop({type: [{ type: mongoose.Schema.Types.Number }]})
+  coordinates: Array<number>;
+}
+
 @Schema({ timestamps: true})
 export class Store {
   @ApiProperty()
@@ -29,8 +69,8 @@ export class Store {
   website: string;
 
   @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.String})
-  address: string;
+  @Prop({type: Address})
+  address: Address;
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})
@@ -47,6 +87,10 @@ export class Store {
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})
   workingHours: string;
+
+  @ApiProperty()
+  @Prop({type: Location})
+  location: Location;
 
   @ApiProperty()
   @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Product.name}]})
@@ -70,4 +114,7 @@ StoreSchema.index({
   description: "text",
   phone: "text",
   website: "text",
+})
+StoreSchema.index({
+  location: "2dsphere",
 })
