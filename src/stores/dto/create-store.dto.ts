@@ -30,6 +30,23 @@ class StoreLocationDto {
   coordinates: Array<number>;
 }
 
+class StoreWorkingHoursDto {
+  @ApiProperty()
+  monday?: string;
+  @ApiProperty()
+  tuesday?: string;
+  @ApiProperty()
+  wednesday?: string;
+  @ApiProperty()
+  thursday?: string;
+  @ApiProperty()
+  friday?: string;
+  @ApiProperty()
+  saturday?: string;
+  @ApiProperty()
+  sunday?: string;
+}
+
 export class CreateStoreDto {
   @ApiProperty()
   name: string;
@@ -56,7 +73,7 @@ export class CreateStoreDto {
   popularityCoefficient: number;
 
   @ApiProperty()
-  workingHours: string;
+  workingHours: StoreWorkingHoursDto;
 
   @ApiProperty()
   products: Array<string>;

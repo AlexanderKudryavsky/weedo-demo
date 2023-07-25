@@ -45,6 +45,31 @@ class StoreLocationSchema {
   coordinates: Array<number>;
 }
 
+@Schema({ _id: false })
+class StoreWorkingHoursSchema {
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  monday?: string;
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  tuesday?: string;
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  wednesday?: string;
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  thursday?: string;
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  friday?: string;
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  saturday?: string;
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  sunday?: string;
+}
+
 @Schema({ timestamps: true})
 export class Store {
   @ApiProperty()
@@ -85,8 +110,8 @@ export class Store {
   popularityCoefficient: number;
 
   @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.String})
-  workingHours: string;
+  @Prop({type: StoreWorkingHoursSchema})
+  workingHours: StoreWorkingHoursSchema;
 
   @ApiProperty()
   @Prop({type: StoreLocationSchema})
