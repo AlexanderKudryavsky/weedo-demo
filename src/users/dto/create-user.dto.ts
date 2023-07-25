@@ -28,7 +28,7 @@ class UserLocation {
     @ApiProperty({default: 'Point'})
     type: 'Point';
 
-    @ApiProperty({type: Number, isArray: true})
+    @ApiProperty({type: Number, isArray: true, description: '[longitude, latitude]'})
     coordinates: Array<number>;
 }
 
