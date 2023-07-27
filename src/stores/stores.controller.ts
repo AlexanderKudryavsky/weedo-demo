@@ -57,6 +57,11 @@ export class StoresController {
     type: String,
     required: false
   })
+  @ApiQuery({
+    name: "categoryId",
+    type: String,
+    required: false
+  })
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
@@ -65,8 +70,9 @@ export class StoresController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
     @Query('search') search?: string,
+    @Query('categoryId') categoryId?: string,
   ): Promise<PaginationResult<Store>> {
-    return this.storesService.findAll({limit, offset, search, user});
+    return this.storesService.findAll({limit, offset, search, user, categoryId});
   }
 
   @ApiOkResponse({ type: Store })
