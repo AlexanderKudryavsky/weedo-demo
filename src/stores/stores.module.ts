@@ -20,6 +20,9 @@ import { jwtSecret } from "../helpers/constants";
   ],
   controllers: [StoresController],
   providers: [StoresService],
-  exports: [StoresService]
+  exports: [
+    StoresService,
+    MongooseModule.forFeature([{ name: Store.name, schema: StoreSchema }]),
+  ]
 })
 export class StoresModule {}

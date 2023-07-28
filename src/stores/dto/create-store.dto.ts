@@ -75,12 +75,6 @@ export class CreateStoreDto {
   @ApiProperty()
   workingHours: StoreWorkingHoursDto;
 
-  @ApiProperty({required: false})
-  products: Array<string>;
-
-  @ApiProperty({required: false})
-  subCategories: Array<string>;
-
   @ApiProperty()
   location: StoreLocationDto;
 }

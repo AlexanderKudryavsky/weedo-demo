@@ -175,12 +175,11 @@ export class StoresService {
   }
 
   async update(id: string, updateStoreDto: UpdateStoreDto) {
-    const { subCategories, ...updateStorePayload } = updateStoreDto;
+    const { ...updateStorePayload } = updateStoreDto;
     return this.storeModel.findByIdAndUpdate(id, {
       $set: {
         ...updateStorePayload
-      },
-      $addToSet: { subCategories: { $each: subCategories } }
+      }
     }, { new: true }).exec();
   }
 

@@ -23,6 +23,8 @@ import { Response } from "express";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { PaginationResult, RemoveResult } from "../helpers/types";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
+import { GetUser } from "../auth/decorators/get-user.decorator";
+import { User } from "../users/entities/user.entity";
 
 @ApiTags('Categories')
 @Controller('category')
@@ -55,6 +57,14 @@ export class CategoryController {
   @Get()
   findAll(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<Category>> {
     return this.categoryService.findAll({limit, offset});
+  }
+
+  @ApiOkResponse({ type: Category, isArray: true })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @Get('/available')
+  findAllAvailable(@GetUser() user: User): Promise<Array<Category>> {
+    return this.categoryService.findAllAvailable({ user });
   }
 
   @ApiOkResponse({ type: Category })
