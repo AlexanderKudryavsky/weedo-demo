@@ -49,6 +49,9 @@ class StoreLocationSchema {
 class StoreWorkingHoursSchema {
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})
+  sunday?: string;
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
   monday?: string;
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})
@@ -65,9 +68,6 @@ class StoreWorkingHoursSchema {
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})
   saturday?: string;
-  @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.String})
-  sunday?: string;
 }
 
 @Schema({ timestamps: true})

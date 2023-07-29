@@ -22,6 +22,7 @@ import { User } from './entities/user.entity';
 import { PaginationResult, RemoveResult } from "../helpers/types";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 import { Response } from "express";
+import { Store } from "../stores/entities/store.entity";
 
 @ApiTags('Users')
 @Controller('users')
@@ -82,6 +83,14 @@ export class UsersController {
       return response.status(400).send({success: false})
     }
     return response.status(200).send({success: true})
+  }
+
+  @ApiOkResponse({ type: Store, isArray: true })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @Get(':id/favoritesStores')
+  async getUserFavoritesStores(@Param('id') id: string) {
+    return this.usersService.getUserFavoritesStores(id);
   }
 
   @ApiOkResponse({ type: User })

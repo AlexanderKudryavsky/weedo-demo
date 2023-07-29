@@ -32,6 +32,8 @@ class StoreLocationDto {
 
 class StoreWorkingHoursDto {
   @ApiProperty({required: false, example: '10:00 - 18:00', description: 'hh:mm - hh:mm or Closed'})
+  sunday?: string;
+  @ApiProperty({required: false, example: '10:00 - 18:00', description: 'hh:mm - hh:mm or Closed'})
   monday?: string;
   @ApiProperty({required: false, example: '10:00 - 18:00', description: 'hh:mm - hh:mm or Closed'})
   tuesday?: string;
@@ -43,8 +45,6 @@ class StoreWorkingHoursDto {
   friday?: string;
   @ApiProperty({required: false, example: '10:00 - 18:00', description: 'hh:mm - hh:mm or Closed'})
   saturday?: string;
-  @ApiProperty({required: false, example: '10:00 - 18:00', description: 'hh:mm - hh:mm or Closed'})
-  sunday?: string;
 }
 
 export class CreateStoreDto {

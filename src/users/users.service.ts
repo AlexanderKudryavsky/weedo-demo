@@ -6,11 +6,13 @@ import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { PaginationResult } from "../helpers/types";
 import { StoresService } from "../stores/stores.service";
+import { Store } from "../stores/entities/store.entity";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Store.name) private storeModel: Model<Store>,
     @Inject(StoresService) private readonly storesService: StoresService,
   ){}
 
@@ -42,6 +44,21 @@ export class UsersService {
 
   remove(id: string) {
     return this.userModel.deleteOne({_id: id}).exec();
+  }
+
+  async getUserFavoritesStores(userId: string) {
+    const user = await this.userModel.findById(userId).exec();
+
+    return this.storeModel.find({
+      _id: {
+        $in: user.favoritesStores,
+      }
+    }).populate({
+      path: "subCategories",
+      populate: {
+        path: "products"
+      }
+    }).exec();
   }
 
   async updateFavoritesStores(userId: string, storeId: string) {
