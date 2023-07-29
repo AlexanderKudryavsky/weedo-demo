@@ -5,14 +5,13 @@ import { InjectModel } from "@nestjs/mongoose";
 import { SubCategory } from "./entities/sub-category.entity";
 import { Model } from "mongoose";
 import { PaginationResult } from "../helpers/types";
-import { StoresService } from "../stores/stores.service";
-import { UpdateStoreDto } from "../stores/dto/update-store.dto";
+import { Store } from "../stores/entities/store.entity";
 
 @Injectable()
 export class SubCategoryService {
   constructor(
     @InjectModel(SubCategory.name) private subCategoryModel: Model<SubCategory>,
-    @Inject(StoresService) private readonly storeService: StoresService,
+    @InjectModel(Store.name) private storeModel: Model<Store>,
   ) {}
 
   async create(createSubCategoryDto: CreateSubCategoryDto) {
@@ -22,9 +21,9 @@ export class SubCategoryService {
       store: createSubCategoryDto.storeId
     });
 
-    await this.storeService.update(createSubCategoryDto.storeId, {
-      subCategories: [subCategory._id]
-    } as UpdateStoreDto);
+    await this.storeModel.updateOne({_id: createSubCategoryDto.storeId }, {
+      $addToSet: { subCategories: subCategory._id }
+    })
 
     return subCategory
   }

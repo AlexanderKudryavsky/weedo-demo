@@ -175,10 +175,9 @@ export class StoresService {
   }
 
   async update(id: string, updateStoreDto: UpdateStoreDto) {
-    const { ...updateStorePayload } = updateStoreDto;
     return this.storeModel.findByIdAndUpdate(id, {
       $set: {
-        ...updateStorePayload
+        ...updateStoreDto
       }
     }, { new: true }).exec();
   }
