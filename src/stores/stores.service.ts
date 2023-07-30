@@ -9,7 +9,7 @@ import { PaginationResult } from "../helpers/types";
 @Injectable()
 export class StoresService {
   constructor(
-    @InjectModel("Store") private storeModel: Model<Store>
+    @InjectModel(Store.name) private storeModel: Model<Store>
   ) {}
 
   async create(createStoreDto: CreateStoreDto) {

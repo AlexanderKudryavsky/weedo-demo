@@ -9,7 +9,7 @@ import { User } from "src/users/entities/user.entity";
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy,'jwt-refresh') {
   constructor(
-    @InjectModel('User') private userModel: Model<User>,
+    @InjectModel(User.name) private userModel: Model<User>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
