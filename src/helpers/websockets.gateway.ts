@@ -13,6 +13,6 @@ export class WebsocketsGateway {
 
 
   sendStatus(data: SendStatusData) {
-    this.server.emit('orderStatusUpdated', {orderId: data.orderId, status: data.status})
+    this.server.emit(`orderStatusUpdated:${data.orderId}`, {orderId: data.orderId, status: data.status})
   }
 }
