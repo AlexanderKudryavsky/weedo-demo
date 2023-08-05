@@ -8,6 +8,7 @@ import { User } from "../users/entities/user.entity";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 import { WebsocketsGateway } from "../helpers/websockets.gateway";
 import { Product } from "../product/entities/product.entity";
+import { PaginationResult } from "../helpers/types";
 
 @Injectable()
 export class OrderService {
@@ -28,13 +29,9 @@ export class OrderService {
       amount: createOrderDto.products.find(productObj => productObj.productId === product._id.toString()).amount
     }))
 
-    console.log(222222, productsWithAmount);
-
     const totalPrice = productsWithAmount.reduce((prev, acc) => {
       return prev + (acc.price * acc.amount);
     }, 0);
-
-    console.log(33333333, totalPrice);
 
     const order = await this.orderModel.create({
       user: createOrderDto.userId,
@@ -43,38 +40,41 @@ export class OrderService {
         amount: product.amount,
         product: new Types.ObjectId(product._id),
       })),
-      // products: createOrderDto.products,
       totalPrice,
       status: OrderStatuses.Placed,
       rejectReason: null,
     });
 
-    // await this.cartModel.findByIdAndUpdate(cart._id, { status: CartStatuses.Ordered }).exec();
-
-    // await this.userModel.findByIdAndUpdate(cart.userId, { currentCart: null }).exec();
-
     return order;
   }
 
-  findAll() {
-    return `This action returns all order`;
+  async findAll({ limit, offset }): Promise<PaginationResult<Order>> {
+    const totalCount = await this.orderModel.find().count().exec()
+    const results = await this.orderModel.find({}, {}, { limit, skip: offset }).populate(['user', 'courier', 'products.product']).exec();
+
+    return {
+      totalCount,
+      results
+    };
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} order`;
+    return this.orderModel.findById(id).populate(['user', 'courier', 'products.product']).exec();
   }
 
-  update(id: string, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async findAllByUserId({ limit, offset, id }) {
+    const totalCount = await this.orderModel.find({user: id}).count().exec()
+    const results = await this.orderModel.find({user: id}, {}, { limit, skip: offset }).populate(['user', 'courier', 'products.product']).exec();
+
+    return {
+      totalCount,
+      results
+    };
   }
 
   async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto) {
     const order = await this.orderModel.findByIdAndUpdate(id, {status: updateOrderStatusDto.status}).exec()
     this.websocketsGateway.sendStatus({orderId: id, status: updateOrderStatusDto.status})
     return order;
-  }
-
-  remove(id: string) {
-    return `This action removes a #${id} order`;
   }
 }
