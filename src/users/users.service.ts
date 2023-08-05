@@ -7,6 +7,7 @@ import { User } from './entities/user.entity';
 import { PaginationResult } from "../helpers/types";
 import { StoresService } from "../stores/stores.service";
 import { Store } from "../stores/entities/store.entity";
+import { AssignBotDto } from "./dto/assign-bot.dto";
 
 @Injectable()
 export class UsersService {
@@ -70,6 +71,12 @@ export class UsersService {
       $addToSet: { favoritesStores: storeId },
     }, { new: true });
   };
+
+  async assignBot(userId: string, assignBotDto: AssignBotDto) {
+    return this.userModel.findByIdAndUpdate(userId, {
+      ...assignBotDto
+    }, { new: true }).exec()
+  }
 
   async removeFavoritesStores(userId: string, storeId: string) {
     return this.userModel.findByIdAndUpdate(userId, {
