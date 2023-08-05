@@ -3,7 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { User } from "../../users/entities/user.entity";
 import * as mongoose from "mongoose";
 import { Transform, Type } from "class-transformer";
-import { Cart } from "../../cart/entities/cart.entity";
 import { Product } from "../../product/entities/product.entity";
 
 export enum OrderStatuses {
@@ -34,16 +33,12 @@ export class Order {
   _id: string;
 
   @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.ObjectId, ref: Cart.name})
-  cartId: Cart;
+  @Prop({type: mongoose.Schema.Types.ObjectId, ref: User.name})
+  user: User;
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.ObjectId, ref: User.name})
-  userId: User;
-
-  @ApiProperty()
-  @Prop({type: mongoose.Schema.Types.ObjectId, ref: User.name})
-  courierId: User;
+  courier: User;
 
   @ApiProperty({type: OrderProductsSchema, isArray: true})
   @Prop([{type: OrderProductsSchema}])
@@ -56,6 +51,10 @@ export class Order {
   @ApiProperty({enum: OrderStatuses})
   @Prop({type: mongoose.Schema.Types.String, enum: OrderStatuses})
   status: OrderStatuses;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  comment: string;
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.String})

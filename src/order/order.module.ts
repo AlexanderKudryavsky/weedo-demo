@@ -6,9 +6,9 @@ import { JwtModule } from "@nestjs/jwt";
 import { jwtSecret } from "../helpers/constants";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Order, OrderSchema } from "./entities/order.entity";
-import { CartModule } from "../cart/cart.module";
 import { UsersModule } from "../users/users.module";
 import { WebsocketsGateway } from "../helpers/websockets.gateway";
+import { ProductModule } from "../product/product.module";
 
 @Module({
   imports: [
@@ -20,8 +20,8 @@ import { WebsocketsGateway } from "../helpers/websockets.gateway";
       },
     }),
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
-    CartModule,
     UsersModule,
+    ProductModule,
   ],
   controllers: [OrderController],
   providers: [OrderService, WebsocketsGateway]

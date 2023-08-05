@@ -4,48 +4,54 @@ import { UpdateOrderDto } from "./dto/update-order.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Order, OrderStatuses } from "./entities/order.entity";
-import { Cart, CartStatuses } from "../cart/entities/cart.entity";
-import { HttpException } from "@nestjs/common/exceptions/http.exception";
 import { User } from "../users/entities/user.entity";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 import { WebsocketsGateway } from "../helpers/websockets.gateway";
+import { Product } from "../product/entities/product.entity";
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
-    @InjectModel(Cart.name) private cartModel: Model<Cart>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Product.name) private productModel: Model<Product>,
     @Inject(WebsocketsGateway) private websocketsGateway: WebsocketsGateway,
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const cart = await this.cartModel.findById(createOrderDto.cartId).populate('products.product').exec();
+    const products = await this.productModel.find({_id: {
+      $in: createOrderDto.products.map(product => product.productId)
+    }}).lean().exec()
 
-    if (cart.status === CartStatuses.Ordered) {
-      throw new HttpException('Cart was already ordered', 400);
-    }
+    const productsWithAmount = products.map(product => ({
+      ...product,
+      amount: createOrderDto.products.find(productObj => productObj.productId === product._id.toString()).amount
+    }))
 
-    const totalPrice = cart.products.reduce((prev, acc) => {
-      return prev + (acc.product.price * acc.amount);
+    console.log(222222, productsWithAmount);
+
+    const totalPrice = productsWithAmount.reduce((prev, acc) => {
+      return prev + (acc.price * acc.amount);
     }, 0);
 
+    console.log(33333333, totalPrice);
+
     const order = await this.orderModel.create({
-      cartId: cart._id,
-      userId: cart.userId,
-      courierId: null,
-      products: cart.products.map(productObj => ({
-        amount: productObj.amount,
-        product: new Types.ObjectId(productObj.product._id),
+      user: createOrderDto.userId,
+      courier: null,
+      products: productsWithAmount.map(product => ({
+        amount: product.amount,
+        product: new Types.ObjectId(product._id),
       })),
+      // products: createOrderDto.products,
       totalPrice,
       status: OrderStatuses.Placed,
       rejectReason: null,
     });
 
-    await this.cartModel.findByIdAndUpdate(cart._id, { status: CartStatuses.Ordered }).exec();
+    // await this.cartModel.findByIdAndUpdate(cart._id, { status: CartStatuses.Ordered }).exec();
 
-    await this.userModel.findByIdAndUpdate(cart.userId, { currentCart: null }).exec();
+    // await this.userModel.findByIdAndUpdate(cart.userId, { currentCart: null }).exec();
 
     return order;
   }

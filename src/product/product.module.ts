@@ -21,6 +21,9 @@ import { SubCategoryModule } from "../sub-category/sub-category.module";
     SubCategoryModule,
   ],
   controllers: [ProductController],
-  providers: [ProductService]
+  providers: [ProductService],
+  exports: [
+    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+  ],
 })
 export class ProductModule {}
