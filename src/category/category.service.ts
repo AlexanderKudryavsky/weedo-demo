@@ -50,14 +50,42 @@ export class CategoryService {
         }
       },
       {
+        $addFields:
+          {
+            subCategoriesProductsLength: {
+              $map: {
+                input: "$subCategories.products",
+                as: "product",
+                in: {
+                  $size: "$$product",
+                },
+              },
+            },
+          },
+      },
+      {
+        $addFields:
+          {
+            filteredSubCategoriesProductsLength: {
+              $filter: {
+                input: "$subCategoriesProductsLength",
+                as: "item",
+                cond: {
+                  $gt: ["$$item", 0],
+                },
+              },
+            },
+          },
+      },
+      {
         $match: {
-          "subCategories.products": {
+          filteredSubCategoriesProductsLength: {
             $exists: true,
             $not: {
-              $size: 0
-            }
-          }
-        }
+              $size: 0,
+            },
+          },
+        },
       },
       {
         $lookup: {
