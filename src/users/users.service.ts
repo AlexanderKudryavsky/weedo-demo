@@ -17,10 +17,6 @@ export class UsersService {
     @Inject(StoresService) private readonly storesService: StoresService,
   ){}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
-
   async findAll({limit, offset}): Promise<PaginationResult<User>> {
     const totalCount = await this.userModel.count().exec();
     const results = await this.userModel.find({}, {},{limit, skip: offset}).populate({path: 'favoritesStores', select: '-subCategories -products'}).exec();

@@ -30,14 +30,6 @@ import { AssignBotDto } from "./dto/assign-bot.dto";
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @ApiBearerAuth()
-  // @Roles(RolesEnum.Admin)
-  // @UseGuards(AuthGuard(), RolesGuard)
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
-
   @ApiOkResponsePaginated(User)
   @ApiQuery({
     name: "limit",
