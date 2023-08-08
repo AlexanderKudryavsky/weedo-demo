@@ -82,6 +82,24 @@ export class OrderController {
     return this.orderService.findAllByUserId({ id, limit, offset });
   }
 
+  @ApiOkResponsePaginated(Order)
+  @ApiQuery({
+    name: "limit",
+    type: String,
+    required: false
+  })
+  @ApiQuery({
+    name: "offset",
+    type: String,
+    required: false
+  })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @Get('/store/:id')
+  findAllByStoreId(@Param('id') id: string, @Query('limit') limit?: string, @Query('offset') offset?: string) {
+    return this.orderService.findAllByStoreId({ id, limit, offset });
+  }
+
   @Patch(':id/status')
   updateStatus(@Param('id') id: string, @Body() updateOrderStatusDto: UpdateOrderStatusDto) {
     return this.orderService.updateStatus(id, updateOrderStatusDto)

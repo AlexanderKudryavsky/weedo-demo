@@ -4,6 +4,7 @@ import { User } from "../../users/entities/user.entity";
 import * as mongoose from "mongoose";
 import { Transform, Type } from "class-transformer";
 import { Product } from "../../product/entities/product.entity";
+import { Store } from "../../stores/entities/store.entity";
 
 export enum OrderStatuses {
   Placed = 'Placed',
@@ -39,6 +40,10 @@ export class Order {
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.ObjectId, ref: User.name})
   courier: User;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.ObjectId, ref: Store.name})
+  store: Store;
 
   @ApiProperty({type: OrderProductsSchema, isArray: true})
   @Prop([{type: OrderProductsSchema}])
