@@ -8,7 +8,6 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  UseInterceptors,
   Query, Res
 } from "@nestjs/common";
 import { UsersService } from './users.service';
@@ -23,7 +22,6 @@ import { PaginationResult, RemoveResult } from "../helpers/types";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 import { Response } from "express";
 import { Store } from "../stores/entities/store.entity";
-import { AssignBotDto } from "./dto/assign-bot.dto";
 
 @ApiTags('Users')
 @Controller('users')
@@ -93,13 +91,6 @@ export class UsersController {
   @Patch(':id/favoriteStore/:storeId')
   addFavoriteStore(@Param('id') id: string, @Param('storeId') storeId: string) {
     return this.usersService.updateFavoritesStores(id, storeId);
-  }
-
-  @ApiOkResponse({ type: User })
-  @UsePipes(ValidationPipe)
-  @Patch(':id/assignBot')
-  assignBot(@Param('id') id: string, @Body() assignBotDto: AssignBotDto) {
-    return this.usersService.assignBot(id, assignBotDto)
   }
 
   @ApiOkResponse({ type: User })

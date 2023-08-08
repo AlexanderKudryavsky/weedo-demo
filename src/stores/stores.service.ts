@@ -5,6 +5,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { FilterQuery, Model, PipelineStage, Types } from "mongoose";
 import { Store } from "./entities/store.entity";
 import { PaginationResult } from "../helpers/types";
+import { AssignBotDto } from "./dto/assign-bot.dto";
 
 @Injectable()
 export class StoresService {
@@ -180,6 +181,12 @@ export class StoresService {
         ...updateStoreDto
       }
     }, { new: true }).exec();
+  }
+
+  async assignBot(id: string, assignBotDto: AssignBotDto) {
+    return this.storeModel.findByIdAndUpdate(id, {
+      ...assignBotDto
+    }, { new: true }).exec()
   }
 
   async remove(id: string) {

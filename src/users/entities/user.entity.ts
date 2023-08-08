@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { ApiProperty } from '@nestjs/swagger';
 import { RolesEnum } from 'src/helpers/constants';
 import { Store } from "../../stores/entities/store.entity";
-import { BotTypes } from "../dto/assign-bot.dto";
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -90,14 +89,6 @@ export class User {
     @ApiProperty()
     @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Store.name}]})
     favoritesStores: Array<Store>
-
-    @ApiProperty({enum: BotTypes})
-    @Prop({type: mongoose.Schema.Types.String, enum: RolesEnum})
-    botType: BotTypes;
-
-    @ApiProperty()
-    @Prop({type: mongoose.Schema.Types.String})
-    externalStoreId: string;
 
     @ApiProperty({enum: RolesEnum})
     @Prop({type: mongoose.Schema.Types.String, enum: RolesEnum})

@@ -25,6 +25,7 @@ import { PaginationResult, RemoveResult } from "../helpers/types";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 import { GetUser } from "../auth/decorators/get-user.decorator";
 import { User } from "../users/entities/user.entity";
+import { AssignBotDto } from "./dto/assign-bot.dto";
 
 @ApiTags('Stores')
 @Controller('stores')
@@ -90,6 +91,13 @@ export class StoresController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStoreDto: UpdateStoreDto) {
     return this.storesService.update(id, updateStoreDto);
+  }
+
+  @ApiOkResponse({ type: Store })
+  @UsePipes(ValidationPipe)
+  @Patch(':id/assignBot')
+  assignBot(@Param('id') id: string, @Body() assignBotDto: AssignBotDto) {
+    return this.storesService.assignBot(id, assignBotDto)
   }
 
   @ApiOkResponse({ type: RemoveResult })

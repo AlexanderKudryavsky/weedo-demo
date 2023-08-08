@@ -4,6 +4,8 @@ import { Transform, Type } from "class-transformer";
 import * as mongoose from 'mongoose';
 import { Product } from "../../product/entities/product.entity";
 import { SubCategory } from "../../sub-category/entities/sub-category.entity";
+import { BotTypes } from "../dto/assign-bot.dto";
+import { RolesEnum } from "../../helpers/constants";
 
 @Schema({ _id: false })
 class StoreAddressSchema {
@@ -116,6 +118,14 @@ export class Store {
   @ApiProperty()
   @Prop({type: StoreLocationSchema})
   location: StoreLocationSchema;
+
+  @ApiProperty({enum: BotTypes})
+  @Prop({type: mongoose.Schema.Types.String, enum: RolesEnum})
+  botType: BotTypes;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  externalStoreId: string;
 
   @ApiProperty()
   @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Product.name}]})
