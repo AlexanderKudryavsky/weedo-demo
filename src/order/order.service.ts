@@ -48,6 +48,8 @@ export class OrderService {
       rejectReason: null,
     });
 
+    await order.populate(['user', 'courier', 'store', 'products.product'])
+
     return order;
   }
 
