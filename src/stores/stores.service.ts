@@ -186,6 +186,7 @@ export class StoresService {
   async assignBot(id: string, assignBotDto: AssignBotDto) {
     console.log(33333333, id);
     console.log(44444444, assignBotDto);
+    console.log(55555555);
     return this.storeModel.findByIdAndUpdate(id, {
       ...assignBotDto
     }, { new: true }).exec()
