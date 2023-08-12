@@ -97,8 +97,6 @@ export class StoresController {
   @UsePipes(ValidationPipe)
   @Patch(':id/assignBot')
   assignBot(@Param('id') id: string, @Body() assignBotDto: AssignBotDto) {
-    console.log(1111111, id);
-    console.log(2222222, assignBotDto);
     return this.storesService.assignBot(id, assignBotDto)
   }
 

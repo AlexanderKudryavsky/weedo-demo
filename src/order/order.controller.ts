@@ -19,7 +19,7 @@ import { Roles } from "../auth/decorators/roles.decorator";
 import { RolesEnum } from "../helpers/constants";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../auth/guards/roles.guard";
-import { Order } from "./entities/order.entity";
+import { Order, OrderStatuses } from "./entities/order.entity";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 
@@ -40,6 +40,12 @@ export class OrderController {
 
   @ApiOkResponsePaginated(Order)
   @ApiQuery({
+    name: "status",
+    type: String,
+    enum: OrderStatuses,
+    required: false
+  })
+  @ApiQuery({
     name: "limit",
     type: String,
     required: false
@@ -52,8 +58,8 @@ export class OrderController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
-  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string) {
-    return this.orderService.findAll({limit, offset});
+  findAll(@Query('status') status?: OrderStatuses, @Query('limit') limit?: string, @Query('offset') offset?: string) {
+    return this.orderService.findAll({status, limit, offset});
   }
 
   @ApiOkResponse({ type: Order })
@@ -65,6 +71,12 @@ export class OrderController {
   }
 
   @ApiOkResponsePaginated(Order)
+  @ApiQuery({
+    name: "status",
+    type: String,
+    enum: OrderStatuses,
+    required: false
+  })
   @ApiQuery({
     name: "limit",
     type: String,
@@ -78,8 +90,8 @@ export class OrderController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get('/user/:id')
-  findAllByUserId(@Param('id') id: string, @Query('limit') limit?: string, @Query('offset') offset?: string) {
-    return this.orderService.findAllByUserId({ id, limit, offset });
+  findAllByUserId(@Param('id') id: string, @Query('status') status?: OrderStatuses, @Query('limit') limit?: string, @Query('offset') offset?: string) {
+    return this.orderService.findAllByUserId({ id, status, limit, offset });
   }
 
   @ApiOkResponsePaginated(Order)

@@ -9,6 +9,7 @@ import { Order, OrderSchema } from "./entities/order.entity";
 import { UsersModule } from "../users/users.module";
 import { WebsocketsGateway } from "../helpers/websockets.gateway";
 import { ProductModule } from "../product/product.module";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProductModule } from "../product/product.module";
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
     UsersModule,
     ProductModule,
+    HttpModule,
   ],
   controllers: [OrderController],
   providers: [OrderService, WebsocketsGateway]

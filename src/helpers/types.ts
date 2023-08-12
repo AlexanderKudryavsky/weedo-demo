@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { OrderStatuses } from "../order/entities/order.entity";
 
 export class RemoveResult  {
   @ApiProperty()
@@ -11,4 +12,9 @@ export class PaginationResult<Entity> {
 
   @ApiProperty()
   totalCount: number;
+}
+
+export type OrdersFilter = {
+  user?: string;
+  status?: OrderStatuses;
 }
