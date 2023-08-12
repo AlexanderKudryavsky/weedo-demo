@@ -19,39 +19,7 @@ export class StoresService {
   }
 
   async findAll({ limit, offset, search, user, categoryId }): Promise<PaginationResult<Store>> {
-    if (categoryId) {
-      return this.findAllByCategoryId({ limit, offset, search, user, categoryId });
-    }
-    return this.findAllWithoutCategory({ limit, offset, search, user });
-  }
-
-  async findAllWithoutCategory({ limit, offset, search, user }): Promise<PaginationResult<Store>> {
-    const filter: FilterQuery<Store> = {};
-    if (search) {
-      filter.$text = { $search: search };
-    }
-    if (user.address?.location) {
-      filter.location = {
-        $geoWithin: {
-          $centerSphere: [[
-            user.address.location.coordinates[0],
-            user.address.location.coordinates[1]
-          ], 5 / 6378.1]
-        }
-      };
-    }
-
-    const totalCount = await this.storeModel.count(filter).exec();
-    const results = await this.storeModel.find(filter, {}, { limit, skip: offset }).populate({
-      path: "subCategories",
-      populate: {
-        path: "products"
-      }
-    }).exec();
-    return {
-      totalCount,
-      results
-    };
+    return this.findAllByCategoryId({ limit, offset, search, user, categoryId });
   }
 
   async findAllByCategoryId({ limit, offset, search, user, categoryId }): Promise<PaginationResult<Store>> {
@@ -134,6 +102,45 @@ export class StoresService {
 
     aggregation.push(
       {
+        $addFields:
+          {
+            categories: {
+              $reduce: {
+                input: "$subCategories.category",
+                initialValue: [],
+                in: {
+                  $cond: {
+                    if: {
+                      $in: ["$$this", "$$value"],
+                    },
+                    then: "$$value",
+                    else: {
+                      $concatArrays: [
+                        "$$value",
+                        ["$$this"],
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+      }
+    )
+
+    aggregation.push(
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categories",
+          foreignField: "_id",
+          as: "categories",
+        },
+      }
+    )
+
+    aggregation.push(
+      {
         $group: {
           _id: null,
           totalCount: { $sum: 1 },
@@ -162,6 +169,13 @@ export class StoresService {
     )
 
     const result = await this.storeModel.aggregate(aggregation) as Array<PaginationResult<Store>>
+
+    if (!result.length) {
+      return {
+        totalCount: 0,
+        results: [],
+      }
+    }
 
     return result[0];
   }
