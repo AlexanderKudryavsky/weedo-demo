@@ -18,11 +18,26 @@ export class StoresService {
     return store.save();
   }
 
-  async findAll({ limit, offset, search, user, categoryId }): Promise<PaginationResult<Store>> {
-    return this.findAllByCategoryId({ limit, offset, search, user, categoryId });
+  async findAll({ limit, offset, search }): Promise<PaginationResult<Store>> {
+    const filter: FilterQuery<Store> = {};
+    if (search) {
+      filter.$text = { $search: search };
+    }
+
+    const totalCount = await this.storeModel.count(filter).exec();
+    const results = await this.storeModel.find(filter, {}, { limit, skip: offset }).populate({
+      path: "subCategories",
+      populate: {
+        path: "products"
+      }
+    }).exec();
+    return {
+      totalCount,
+      results
+    };
   }
 
-  async findAllByCategoryId({ limit, offset, search, user, categoryId }): Promise<PaginationResult<Store>> {
+  async findAllAvailable({ limit, offset, search, user, categoryId }): Promise<PaginationResult<Store>> {
     const aggregation: Array<PipelineStage> = [
       {
         $lookup: {
@@ -62,6 +77,50 @@ export class StoresService {
           ],
           as: "subCategories"
         }
+      },
+      {
+        $addFields: {
+          subCategories: {
+            $filter: {
+              input: "$subCategories",
+              as: "subCategory",
+              cond: { $ne: ["$$subCategory.products", []] }
+            }
+          }
+        }
+      },
+      {
+        $addFields:
+          {
+            categories: {
+              $reduce: {
+                input: "$subCategories.category",
+                initialValue: [],
+                in: {
+                  $cond: {
+                    if: {
+                      $in: ["$$this", "$$value"],
+                    },
+                    then: "$$value",
+                    else: {
+                      $concatArrays: [
+                        "$$value",
+                        ["$$this"],
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categories",
+          foreignField: "_id",
+          as: "categories",
+        },
       }
     ];
 
@@ -99,45 +158,6 @@ export class StoresService {
         }
       });
     }
-
-    aggregation.push(
-      {
-        $addFields:
-          {
-            categories: {
-              $reduce: {
-                input: "$subCategories.category",
-                initialValue: [],
-                in: {
-                  $cond: {
-                    if: {
-                      $in: ["$$this", "$$value"],
-                    },
-                    then: "$$value",
-                    else: {
-                      $concatArrays: [
-                        "$$value",
-                        ["$$this"],
-                      ],
-                    },
-                  },
-                },
-              },
-            },
-          },
-      }
-    )
-
-    aggregation.push(
-      {
-        $lookup: {
-          from: "categories",
-          localField: "categories",
-          foreignField: "_id",
-          as: "categories",
-        },
-      }
-    )
 
     aggregation.push(
       {

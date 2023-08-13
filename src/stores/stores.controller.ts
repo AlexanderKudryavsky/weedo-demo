@@ -58,22 +58,51 @@ export class StoresController {
     type: String,
     required: false
   })
+  @ApiBearerAuth()
+  @Roles(RolesEnum.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Get()
+  findAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+    @Query('search') search?: string,
+  ): Promise<PaginationResult<Store>> {
+    return this.storesService.findAll({limit, offset, search});
+  }
+
+  @ApiOkResponsePaginated(Store)
+  @ApiQuery({
+    name: "limit",
+    type: String,
+    required: false
+  })
+  @ApiQuery({
+    name: "offset",
+    type: String,
+    required: false
+  })
+  @ApiQuery({
+    name: "search",
+    type: String,
+    required: false
+  })
   @ApiQuery({
     name: "categoryId",
     type: String,
     required: false
   })
   @ApiBearerAuth()
+  @Roles(RolesEnum.Admin, RolesEnum.Customer)
   @UseGuards(AuthGuard())
-  @Get()
-  findAll(
+  @Get('/available')
+  findAllAvailable(
     @GetUser() user: User,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
     @Query('search') search?: string,
     @Query('categoryId') categoryId?: string,
   ): Promise<PaginationResult<Store>> {
-    return this.storesService.findAll({limit, offset, search, user, categoryId});
+    return this.storesService.findAllAvailable({limit, offset, search, user, categoryId});
   }
 
   @ApiOkResponse({ type: Store })
