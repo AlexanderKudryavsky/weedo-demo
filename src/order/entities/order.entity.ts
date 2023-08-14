@@ -61,6 +61,10 @@ export class Order {
   _id: string;
 
   @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number})
+  number: number;
+
+  @ApiProperty()
   @Prop({type: mongoose.Schema.Types.ObjectId, ref: User.name})
   user: User;
 

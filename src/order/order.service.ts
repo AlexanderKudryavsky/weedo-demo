@@ -68,7 +68,10 @@ export class OrderService {
       deliveryPrice,
     };
 
+    const ordersCount = await this.orderModel.count({store: store._id}).exec();
+
     const order = await this.orderModel.create({
+      number: ordersCount + 1,
       user: createOrderDto.userId,
       store: storeId,
       courier: null,
