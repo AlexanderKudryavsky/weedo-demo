@@ -72,6 +72,9 @@ export class CreateStoreDto {
   @ApiProperty()
   popularityCoefficient: number;
 
+  @ApiProperty({type: Number, required: true})
+  commission: number;
+
   @ApiProperty()
   workingHours: StoreWorkingHoursDto;
 

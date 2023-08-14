@@ -16,10 +16,37 @@ export enum OrderStatuses {
 }
 
 @Schema({_id: false})
+export class OrderPriceSchema {
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number})
+  serviceCommission: number;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number})
+  storeProfit: number;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number})
+  deliveryPrice: number;
+}
+
+@Schema({_id: false})
 export class OrderProductsSchema {
   @ApiProperty()
-  @Prop()
+  @Prop({type: mongoose.Schema.Types.Number})
   amount: number;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number})
+  serviceCommission: number;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number})
+  storeProfit: number;
+
+  @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number})
+  totalPrice: number;
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.ObjectId, ref: Product.name})
@@ -48,6 +75,10 @@ export class Order {
   @ApiProperty({type: OrderProductsSchema, isArray: true})
   @Prop([{type: OrderProductsSchema}])
   products: OrderProductsSchema;
+
+  @ApiProperty({type: OrderPriceSchema})
+  @Prop({type: OrderPriceSchema})
+  price: OrderPriceSchema;
 
   @ApiProperty()
   @Prop({type: mongoose.Schema.Types.Number})

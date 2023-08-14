@@ -18,4 +18,7 @@ export class CreateProductDto {
 
   @ApiProperty()
   image: string;
+
+  @ApiProperty({type: Number, required: false})
+  commission: number;
 }

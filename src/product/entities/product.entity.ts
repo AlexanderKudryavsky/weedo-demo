@@ -45,6 +45,10 @@ export class Product {
   image: string;
 
   @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number, required: false})
+  commission: number;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

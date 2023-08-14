@@ -10,6 +10,7 @@ import { Product } from "../product/entities/product.entity";
 import { OrdersFilter, PaginationResult } from "../helpers/types";
 import { HttpService } from "@nestjs/axios";
 import { BotTypes } from "../stores/dto/assign-bot.dto";
+import { Store } from "../stores/entities/store.entity";
 
 @Injectable()
 export class OrderService {
@@ -17,25 +18,55 @@ export class OrderService {
     @InjectModel(Order.name) private orderModel: Model<Order>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Product.name) private productModel: Model<Product>,
+    @InjectModel(Store.name) private storeModel: Model<Store>,
     @Inject(WebsocketsGateway) private websocketsGateway: WebsocketsGateway,
-    private readonly httpService: HttpService,
-  ) {}
+    private readonly httpService: HttpService
+  ) {
+  }
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const products = await this.productModel.find({_id: {
-      $in: createOrderDto.products.map(product => product.productId)
-    }}).lean().exec()
+    const DEFAULT_DELIVERY_PRICE = 10000;
 
-    const productsWithAmount = products.map(product => ({
-      ...product,
-      amount: createOrderDto.products.find(productObj => productObj.productId === product._id.toString()).amount
-    }))
+    const products = await this.productModel.find({
+      _id: {
+        $in: createOrderDto.products.map(product => product.productId)
+      }
+    }).lean().exec();
 
-    const storeId = products[0].store
+    const storeId = products[0].store;
+
+    const store = await this.storeModel.findById(storeId).lean().exec();
+
+    if (!store.botType) {
+      throw new BadRequestException("Bot is not assigned to store");
+    }
+
+    const productsWithAmount = products.map(product => {
+      const amount = createOrderDto.products.find(productObj => productObj.productId === product._id.toString()).amount;
+      return {
+        ...product,
+        amount,
+        serviceCommission: (product.price * ((product.commission || store.commission) / 100)) * amount,
+        storeProfit: (product.price * ((100 - (product.commission || store.commission)) / 100)) * amount,
+        totalPrice: product.price * amount,
+      };
+    });
 
     const totalPrice = productsWithAmount.reduce((prev, acc) => {
-      return prev + (acc.price * acc.amount);
+      return prev + ((acc.price) * acc.amount);
     }, 0);
+
+    const deliveryPrice = totalPrice >= 150000 ? 0 : DEFAULT_DELIVERY_PRICE;
+
+    const price = {
+      serviceCommission: productsWithAmount.reduce((prev, acc) => {
+        return prev + acc.serviceCommission;
+      }, 0),
+      storeProfit: productsWithAmount.reduce((prev, acc) => {
+        return prev + acc.storeProfit;
+      }, 0),
+      deliveryPrice,
+    };
 
     const order = await this.orderModel.create({
       user: createOrderDto.userId,
@@ -43,23 +74,23 @@ export class OrderService {
       courier: null,
       products: productsWithAmount.map(product => ({
         amount: product.amount,
-        product: new Types.ObjectId(product._id),
+        serviceCommission: product.serviceCommission,
+        storeProfit: product.storeProfit,
+        totalPrice: product.totalPrice,
+        product: new Types.ObjectId(product._id)
       })),
-      totalPrice,
+      price,
+      totalPrice: totalPrice + deliveryPrice,
       status: OrderStatuses.Placed,
-      rejectReason: null,
+      rejectReason: null
     });
 
-    await order.populate(['user', 'courier', 'store', 'products.product'])
-
-    if (!order.store.botType) {
-      throw new BadRequestException('Bot is not assigned to store')
-    }
+    await order.populate(["user", "courier", "store", "products.product"]);
 
     const botsMapper = {
       [BotTypes.Telegram]: this.sendOrderToTelegramBot,
-      [BotTypes.Line]: this.sendOrderToLineBot,
-    }
+      [BotTypes.Line]: this.sendOrderToLineBot
+    };
 
     await botsMapper[order.store.botType](order);
 
@@ -67,7 +98,7 @@ export class OrderService {
   }
 
   async sendOrderToTelegramBot(order: Order) {
-    console.log('Send order to Telegram');
+    console.log("Send order to Telegram");
 
     return;
 
@@ -77,7 +108,7 @@ export class OrderService {
   };
 
   async sendOrderToLineBot(order: Order) {
-    console.log('Send order to Line');
+    console.log("Send order to Line");
 
     return;
   };
@@ -89,8 +120,11 @@ export class OrderService {
       filter.status = status;
     }
 
-    const totalCount = await this.orderModel.find(filter).count().exec()
-    const results = await this.orderModel.find(filter, {}, { limit, skip: offset }).populate(['user', 'courier', 'store', 'products.product']).exec();
+    const totalCount = await this.orderModel.find(filter).count().exec();
+    const results = await this.orderModel.find(filter, {}, {
+      limit,
+      skip: offset
+    }).populate(["user", "courier", "store", "products.product"]).exec();
 
     return {
       totalCount,
@@ -99,21 +133,24 @@ export class OrderService {
   }
 
   findOne(id: string) {
-    return this.orderModel.findById(id).populate(['user', 'courier', 'store', 'products.product']).exec();
+    return this.orderModel.findById(id).populate(["user", "courier", "store", "products.product"]).exec();
   }
 
   async findAllByUserId({ id, status, limit, offset }) {
 
     const filter: FilterQuery<OrdersFilter> = {
-      user: id,
+      user: id
     };
 
     if (status) {
       filter.status = status;
     }
 
-    const totalCount = await this.orderModel.find(filter).count().exec()
-    const results = await this.orderModel.find(filter, {}, { limit, skip: offset }).populate(['user', 'courier', 'store', 'products.product']).exec();
+    const totalCount = await this.orderModel.find(filter).count().exec();
+    const results = await this.orderModel.find(filter, {}, {
+      limit,
+      skip: offset
+    }).populate(["user", "courier", "store", "products.product"]).exec();
 
     return {
       totalCount,
@@ -122,8 +159,11 @@ export class OrderService {
   }
 
   async findAllByStoreId({ limit, offset, id }) {
-    const totalCount = await this.orderModel.find({user: id}).count().exec()
-    const results = await this.orderModel.find({store: id}, {}, { limit, skip: offset }).populate(['user', 'courier', 'store', 'products.product']).exec();
+    const totalCount = await this.orderModel.find({ user: id }).count().exec();
+    const results = await this.orderModel.find({ store: id }, {}, {
+      limit,
+      skip: offset
+    }).populate(["user", "courier", "store", "products.product"]).exec();
 
     return {
       totalCount,
@@ -132,8 +172,8 @@ export class OrderService {
   }
 
   async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto) {
-    const order = await this.orderModel.findByIdAndUpdate(id, {status: updateOrderStatusDto.status}).exec()
-    this.websocketsGateway.sendStatus({orderId: id, status: updateOrderStatusDto.status})
+    const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }).exec();
+    this.websocketsGateway.sendStatus({ orderId: id, status: updateOrderStatusDto.status });
     return order;
   }
 }

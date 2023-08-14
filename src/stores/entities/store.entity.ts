@@ -128,6 +128,10 @@ export class Store {
   externalStoreId: string;
 
   @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.Number, required: true})
+  commission: number;
+
+  @ApiProperty()
   @Prop({type: [{ type: mongoose.Schema.Types.ObjectId, ref: Product.name}]})
   products: Array<Product>;
 

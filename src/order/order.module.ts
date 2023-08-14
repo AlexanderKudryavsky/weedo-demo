@@ -10,6 +10,7 @@ import { UsersModule } from "../users/users.module";
 import { WebsocketsGateway } from "../helpers/websockets.gateway";
 import { ProductModule } from "../product/product.module";
 import { HttpModule } from "@nestjs/axios";
+import { StoresModule } from "../stores/stores.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { HttpModule } from "@nestjs/axios";
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
     UsersModule,
     ProductModule,
+    StoresModule,
     HttpModule,
   ],
   controllers: [OrderController],
