@@ -114,6 +114,19 @@ export class CategoryService {
           newRoot: "$doc"
         }
       },
+      {
+        $group: {
+          _id: "$_id",
+          doc: {
+            $first: "$$CURRENT",
+          },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$doc",
+        },
+      },
     ];
 
     if (user.address?.location) {
