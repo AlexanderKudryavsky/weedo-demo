@@ -22,6 +22,7 @@ import { RolesGuard } from "../auth/guards/roles.guard";
 import { Order, OrderStatuses } from "./entities/order.entity";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
+import { AssignCourierDto } from "./dto/assign-courier.dto";
 
 @ApiTags('Orders')
 @Controller('order')
@@ -112,6 +113,15 @@ export class OrderController {
     return this.orderService.findAllByStoreId({ id, limit, offset });
   }
 
+  @ApiBearerAuth()
+  @Roles(RolesEnum.Courier, RolesEnum.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Patch(':id/assignCourier')
+  assignCourier(@Param('id') id: string, @Body() assignCourierDto: AssignCourierDto) {
+    return this.orderService.assignCourier(id, assignCourierDto)
+  }
+
+  @ApiOkResponse({type: Order})
   @Patch(':id/status')
   updateStatus(@Param('id') id: string, @Body() updateOrderStatusDto: UpdateOrderStatusDto) {
     return this.orderService.updateStatus(id, updateOrderStatusDto)

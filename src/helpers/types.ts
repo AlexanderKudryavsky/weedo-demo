@@ -8,10 +8,10 @@ export class RemoveResult  {
 
 export class PaginationResult<Entity> {
   @ApiProperty()
-  results: Array<Entity>;
+  totalCount: number;
 
   @ApiProperty()
-  totalCount: number;
+  results: Array<Entity>;
 }
 
 export type OrdersFilter = {

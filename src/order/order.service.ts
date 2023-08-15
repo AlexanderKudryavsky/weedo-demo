@@ -11,6 +11,7 @@ import { OrdersFilter, PaginationResult } from "../helpers/types";
 import { HttpService } from "@nestjs/axios";
 import { BotTypes } from "../stores/dto/assign-bot.dto";
 import { Store } from "../stores/entities/store.entity";
+import { AssignCourierDto } from "./dto/assign-courier.dto";
 
 @Injectable()
 export class OrderService {
@@ -174,8 +175,12 @@ export class OrderService {
     };
   }
 
+  async assignCourier(id: string, assignCourierDto: AssignCourierDto) {
+    return this.orderModel.findByIdAndUpdate(id, {courier: assignCourierDto.courierId}, {new: true}).exec();
+  };
+
   async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto) {
-    const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }).exec();
+    const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }, {new: true}).exec();
     this.websocketsGateway.sendStatus({ orderId: id, status: updateOrderStatusDto.status });
     return order;
   }

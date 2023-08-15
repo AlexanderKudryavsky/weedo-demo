@@ -7,6 +7,7 @@ import { CategoryModule } from './category/category.module';
 import { SubCategoryModule } from './sub-category/sub-category.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
+import { CourierModule } from './courier/courier.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { OrderModule } from './order/order.module';
     CategoryModule,
     SubCategoryModule,
     ProductModule,
-    OrderModule
+    OrderModule,
+    CourierModule
   ],
   controllers: [],
   providers: [],
