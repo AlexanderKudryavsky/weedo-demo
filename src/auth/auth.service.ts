@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { TokenResponse } from './types';
 import { Model } from "mongoose";
-// import { CreateUserDto } from '../users/dto/createa-user.dto';
 import * as moment from 'moment';
 import { User, UserDocument } from "src/users/entities/user.entity";
 import { InjectModel } from '@nestjs/mongoose';
@@ -50,12 +49,7 @@ export class AuthService {
   }
 
   async signUp(userData: CreateUserDto): Promise<User> {
-    try {
-      const user = await new this.userModel(userData);
-      return user.save();
-    } catch (error) {
-      console.log(888888, error)
-      throw new BadRequestException(error.message);
-    }
+    const user = await new this.userModel(userData);
+    return user.save();
   }
 }
