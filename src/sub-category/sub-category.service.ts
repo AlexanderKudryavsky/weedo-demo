@@ -3,7 +3,7 @@ import { CreateSubCategoryDto } from "./dto/create-sub-category.dto";
 import { UpdateSubCategoryDto } from "./dto/update-sub-category.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { SubCategory } from "./entities/sub-category.entity";
-import { Model } from "mongoose";
+import { Model, UpdateQuery } from "mongoose";
 import { PaginationResult } from "../helpers/types";
 import { Store } from "../stores/entities/store.entity";
 
@@ -45,14 +45,27 @@ export class SubCategoryService {
   }
 
   update(id: string, updateSubCategoryDto: UpdateSubCategoryDto) {
-    return this.subCategoryModel.findByIdAndUpdate(id, {
-      $set: {
-        name: updateSubCategoryDto.name,
-        store: updateSubCategoryDto.storeId,
-        category: updateSubCategoryDto.categoryId,
-      },
-      $addToSet: { products: { $each: updateSubCategoryDto.products } }
-    }, { new: true }).populate("category").exec();
+    const updateData: UpdateQuery<SubCategory> = {
+      $set: {},
+    }
+
+    if (updateSubCategoryDto.name) {
+      updateData.$set.name = updateSubCategoryDto.name;
+    }
+
+    if (updateSubCategoryDto.storeId) {
+      updateData.$set.store = updateSubCategoryDto.storeId;
+    }
+
+    if (updateSubCategoryDto.categoryId) {
+      updateData.$set.category = updateSubCategoryDto.categoryId;
+    }
+
+    if (updateSubCategoryDto.products && updateSubCategoryDto.products.length) {
+      updateData.$addToSet = { products: { $each: updateSubCategoryDto.products } };
+    }
+
+    return this.subCategoryModel.findByIdAndUpdate(id, updateData, { new: true }).populate("category").exec();
   }
 
   remove(id: string) {

@@ -4,6 +4,6 @@ import { Optional } from "@nestjs/common";
 
 export class UpdateSubCategoryDto extends PartialType(CreateSubCategoryDto) {
   @Optional()
-  @ApiProperty()
+  @ApiProperty({required: false})
   products: Array<string>;
 }
