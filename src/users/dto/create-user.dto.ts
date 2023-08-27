@@ -57,11 +57,11 @@ export class CreateUserDto {
     @ApiProperty()
     password: string;
 
-    @ApiProperty()
-    phone: string;
+    @ApiProperty({required: false})
+    phone?: string;
 
-    @ApiProperty()
-    address: UserAddress;
+    @ApiProperty({required: false})
+    address?: UserAddress;
 
     @IsNotEmpty()
     @ApiProperty({

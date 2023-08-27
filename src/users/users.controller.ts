@@ -30,6 +30,11 @@ export class UsersController {
 
   @ApiOkResponsePaginated(User)
   @ApiQuery({
+    name: "role",
+    type: String,
+    required: false
+  })
+  @ApiQuery({
     name: "limit",
     type: String,
     required: false
@@ -42,8 +47,8 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
-  findAll(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<User>> {
-    return this.usersService.findAll({limit, offset});
+  findAll(@Query('limit') role?: RolesEnum, @Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<User>> {
+    return this.usersService.findAll({limit, offset, role});
   }
 
   @ApiOkResponse({ type: User })

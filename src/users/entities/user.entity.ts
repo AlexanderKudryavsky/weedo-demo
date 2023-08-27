@@ -79,11 +79,11 @@ export class User {
     email: string;
 
     @ApiProperty()
-    @Prop({ unique: true, type: mongoose.Schema.Types.String })
+    @Prop({ unique: true, type: mongoose.Schema.Types.String, required: false, sparse: true })
     phone: string;
 
     @ApiProperty()
-    @Prop({ type: UserAddressSchema })
+    @Prop({ type: UserAddressSchema, required: false })
     address: UserAddressSchema;
 
     @ApiProperty()

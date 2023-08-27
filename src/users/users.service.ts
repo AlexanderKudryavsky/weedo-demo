@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from "mongoose";
 import { User } from './entities/user.entity';
 import { PaginationResult } from "../helpers/types";
 import { StoresService } from "../stores/stores.service";
@@ -15,9 +15,15 @@ export class UsersService {
     @Inject(StoresService) private readonly storesService: StoresService,
   ){}
 
-  async findAll({limit, offset}): Promise<PaginationResult<User>> {
-    const totalCount = await this.userModel.count().exec();
-    const results = await this.userModel.find({}, {},{limit, skip: offset}).populate({path: 'favoritesStores', select: '-subCategories -products'}).exec();
+  async findAll({limit, offset, role}): Promise<PaginationResult<User>> {
+    const filter: FilterQuery<User> = {};
+
+    if (role) {
+      filter.role = role;
+    }
+
+    const totalCount = await this.userModel.count(filter).exec();
+    const results = await this.userModel.find(filter, {},{limit, skip: offset}).populate({path: 'favoritesStores', select: '-subCategories -products'}).exec();
     return {
       totalCount,
       results,

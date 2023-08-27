@@ -49,7 +49,6 @@ export class AuthService {
   }
 
   async signUp(userData: CreateUserDto): Promise<User> {
-    const user = await new this.userModel(userData);
-    return user.save();
+    return this.userModel.create(userData);
   }
 }
