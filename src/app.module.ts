@@ -12,7 +12,7 @@ import { CourierModule } from './courier/courier.module';
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot('mongodb://mongo:BOOx14SDyF36j85ffnOl@containers-us-west-6.railway.app:6949', {dbName: 'weedo'}),
+    MongooseModule.forRoot('mongodb://mongo:eD4Z25FUCLUlB3XJYJCd@containers-us-west-184.railway.app:7397', {dbName: 'weedo'}),
     UsersModule,
     StoresModule,
     CategoryModule,

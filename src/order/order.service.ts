@@ -12,6 +12,7 @@ import { HttpService } from "@nestjs/axios";
 import { BotTypes } from "../stores/dto/assign-bot.dto";
 import { Store } from "../stores/entities/store.entity";
 import { AssignCourierDto } from "./dto/assign-courier.dto";
+import axios from 'axios';
 
 @Injectable()
 export class OrderService {
@@ -21,7 +22,7 @@ export class OrderService {
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectModel(Store.name) private storeModel: Model<Store>,
     @Inject(WebsocketsGateway) private websocketsGateway: WebsocketsGateway,
-    private readonly httpService: HttpService
+    private httpService: HttpService
   ) {
   }
 
@@ -104,11 +105,11 @@ export class OrderService {
   async sendOrderToTelegramBot(order: Order) {
     console.log("Send order to Telegram");
 
-    return;
+    const botBaseUrl = 'https://nodejs-production-92d4.up.railway.app';
 
-    // const botBaseUrl = 'https://7262-178-66-131-182.ngrok.io'
-    //
-    // return this.httpService.post(`${botBaseUrl}/tg/order`, order);
+    await axios.post(`${botBaseUrl}/tg/order`, order);
+
+    return;
   };
 
   async sendOrderToLineBot(order: Order) {

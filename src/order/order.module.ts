@@ -14,6 +14,10 @@ import { StoresModule } from "../stores/stores.module";
 
 @Module({
   imports: [
+    HttpModule.register({
+      timeout: 5000,
+      maxRedirects: 5,
+    }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: jwtSecret,
@@ -25,7 +29,6 @@ import { StoresModule } from "../stores/stores.module";
     UsersModule,
     ProductModule,
     StoresModule,
-    HttpModule,
   ],
   controllers: [OrderController],
   providers: [OrderService, WebsocketsGateway]
