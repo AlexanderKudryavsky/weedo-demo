@@ -32,7 +32,8 @@ export class UsersController {
   @ApiQuery({
     name: "role",
     type: String,
-    required: false
+    required: false,
+    enum: RolesEnum,
   })
   @ApiQuery({
     name: "limit",
@@ -47,7 +48,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get()
-  findAll(@Query('limit') role?: RolesEnum, @Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<User>> {
+  findAll(@Query('role') role?: RolesEnum, @Query('limit') limit?: string, @Query('offset') offset?: string): Promise<PaginationResult<User>> {
     return this.usersService.findAll({limit, offset, role});
   }
 
