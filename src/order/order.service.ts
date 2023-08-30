@@ -177,11 +177,15 @@ export class OrderService {
   }
 
   async assignCourier(id: string, assignCourierDto: AssignCourierDto) {
+    const order = await this.orderModel.findById(id).lean().exec()
+    if (order.courier) {
+      throw new BadRequestException('Courier already assigned');
+    }
     return this.orderModel.findByIdAndUpdate(id, {courier: assignCourierDto.courierId}, {new: true}).exec();
   };
 
   async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto) {
-    const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }, {new: true}).exec();
+    const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }, {new: true}).populate('user').exec();
     this.websocketsGateway.sendStatus({ orderId: id, status: updateOrderStatusDto.status });
     return order;
   }
