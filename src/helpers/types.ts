@@ -18,3 +18,17 @@ export type OrdersFilter = {
   user?: string;
   status?: OrderStatuses;
 }
+
+class StoreReportOrders {
+  @ApiProperty()
+  number: number;
+  @ApiProperty()
+  storeProfit: number;
+}
+
+export class StoreReport {
+  @ApiProperty()
+  totalStoreProfit: number;
+  @ApiProperty({isArray: true, type: StoreReportOrders})
+  orders: Array<StoreReportOrders>
+}

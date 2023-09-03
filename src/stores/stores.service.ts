@@ -99,28 +99,28 @@ export class StoresService {
                 in: {
                   $cond: {
                     if: {
-                      $in: ["$$this", "$$value"],
+                      $in: ["$$this", "$$value"]
                     },
                     then: "$$value",
                     else: {
                       $concatArrays: [
                         "$$value",
-                        ["$$this"],
-                      ],
-                    },
-                  },
-                },
-              },
-            },
-          },
+                        ["$$this"]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
       },
       {
         $lookup: {
           from: "categories",
           localField: "categories",
           foreignField: "_id",
-          as: "categories",
-        },
+          as: "categories"
+        }
       }
     ];
 
@@ -183,18 +183,18 @@ export class StoresService {
     aggregation.push(
       {
         $project: {
-          _id: 0,
+          _id: 0
         }
       }
-    )
+    );
 
-    const result = await this.storeModel.aggregate(aggregation) as Array<PaginationResult<Store>>
+    const result = await this.storeModel.aggregate(aggregation) as Array<PaginationResult<Store>>;
 
     if (!result.length) {
       return {
         totalCount: 0,
-        results: [],
-      }
+        results: []
+      };
     }
 
     return result[0];
@@ -220,7 +220,7 @@ export class StoresService {
   async assignBot(id: string, assignBotDto: AssignBotDto) {
     return this.storeModel.findByIdAndUpdate(id, {
       ...assignBotDto
-    }, { new: true }).exec()
+    }, { new: true }).exec();
   }
 
   async remove(id: string) {

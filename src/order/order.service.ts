@@ -1,13 +1,13 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { FilterQuery, Model, Types } from "mongoose";
+import { FilterQuery, Model, PipelineStage, Schema, Types } from "mongoose";
 import { Order, OrderStatuses } from "./entities/order.entity";
 import { User } from "../users/entities/user.entity";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 import { WebsocketsGateway } from "../helpers/websockets.gateway";
 import { Product } from "../product/entities/product.entity";
-import { OrdersFilter, PaginationResult } from "../helpers/types";
+import { OrdersFilter, PaginationResult, StoreReport } from "../helpers/types";
 import { HttpService } from "@nestjs/axios";
 import { BotTypes } from "../stores/dto/assign-bot.dto";
 import { Store } from "../stores/entities/store.entity";
@@ -197,5 +197,66 @@ export class OrderService {
     const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }, {new: true}).populate(['user', 'courier']).exec();
     this.websocketsGateway.sendStatus({ orderId: id, status: updateOrderStatusDto.status });
     return order;
+  }
+
+  async getReport(storeId, { startDate, endDate }) {
+    const aggregation: Array<PipelineStage> = [
+      {
+        $project: {
+          storeProfit: "$price.storeProfit",
+          number: "$number"
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalStoreProfit: {
+            $sum: "$storeProfit"
+          },
+          orders: {
+            $push: "$$ROOT"
+          }
+        }
+      }
+    ];
+
+    const match: PipelineStage = {
+      $match: {
+        store: new Types.ObjectId(storeId)
+      }
+    };
+
+    if (startDate) {
+      console.log(12121212, match);
+      match.$match.createdAt = {
+        ...match.$match.createdAt,
+        $gte: new Date(startDate),
+      }
+    }
+
+    if (endDate) {
+      console.log(21212121, match);
+      match.$match.createdAt = {
+        ...match.$match.createdAt,
+        $lte: new Date(endDate),
+      }
+    }
+    console.log(23232323, match);
+
+    aggregation.unshift(match);
+
+    console.log(111111111, aggregation);
+
+    // return aggregation
+
+    const result = await this.orderModel.aggregate(aggregation) as Array<StoreReport>;
+
+    console.log(222222222, result);
+
+    if (!result.length) {
+      return {};
+    }
+
+    return result[0];
   }
 }

@@ -23,6 +23,7 @@ import { Order, OrderStatuses } from "./entities/order.entity";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 import { ApiOkResponsePaginated } from "../helpers/apiOkResponsePaginated.decorator";
 import { AssignCourierDto } from "./dto/assign-courier.dto";
+import { StoreReport } from "../helpers/types";
 
 @ApiTags('Orders')
 @Controller('order')
@@ -125,5 +126,27 @@ export class OrderController {
   @Patch(':id/status')
   updateStatus(@Param('id') id: string, @Body() updateOrderStatusDto: UpdateOrderStatusDto) {
     return this.orderService.updateStatus(id, updateOrderStatusDto)
+  }
+
+  @ApiOkResponse({type: StoreReport})
+  @ApiQuery({
+    name: "startDate",
+    type: Date,
+    required: false,
+    example: '2023-09-03T22:00:00.447Z'
+  })
+  @ApiQuery({
+    name: "endDate",
+    type: Date,
+    required: false,
+    example: '2023-09-03T00:00:00.447Z'
+  })
+  @Get('store/:storeId/report')
+  report(
+    @Param('storeId') storeId: string,
+    @Query('startDate') startDate?: Date,
+    @Query('endDate') endDate?: Date,
+  ) {
+    return this.orderService.getReport(storeId, {startDate, endDate})
   }
 }
