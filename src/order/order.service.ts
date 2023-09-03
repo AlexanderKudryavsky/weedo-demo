@@ -129,7 +129,10 @@ export class OrderService {
     const results = await this.orderModel.find(filter, {}, {
       limit,
       skip: offset
-    }).populate(["user", "courier", "store", "products.product"]).exec();
+    })
+      .sort("createdAt")
+      .populate(["user", "courier", "store", "products.product"])
+      .exec();
 
     return {
       totalCount,
@@ -155,7 +158,10 @@ export class OrderService {
     const results = await this.orderModel.find(filter, {}, {
       limit,
       skip: offset
-    }).populate(["user", "courier", "store", "products.product"]).exec();
+    })
+      .sort("createdAt")
+      .populate(["user", "courier", "store", "products.product"])
+      .exec();
 
     return {
       totalCount,
@@ -168,7 +174,10 @@ export class OrderService {
     const results = await this.orderModel.find({ store: id }, {}, {
       limit,
       skip: offset
-    }).populate(["user", "courier", "store", "products.product"]).exec();
+    })
+      .sort("createdAt")
+      .populate(["user", "courier", "store", "products.product"])
+      .exec();
 
     return {
       totalCount,
@@ -185,7 +194,7 @@ export class OrderService {
   };
 
   async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto) {
-    const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }, {new: true}).populate('user').exec();
+    const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }, {new: true}).populate(['user', 'courier']).exec();
     this.websocketsGateway.sendStatus({ orderId: id, status: updateOrderStatusDto.status });
     return order;
   }

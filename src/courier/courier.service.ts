@@ -37,7 +37,7 @@ export class CourierService {
     };
   }
 
-  async findAll({ courierId, status, limit, offset }): Promise<PaginationResult<Order>> {
+  async findAll({ courierId, status, limit, offset, startDate, endDate }): Promise<PaginationResult<Order>> {
     const filter: FilterQuery<OrdersFilter> = {
       courier: courierId,
     };
@@ -46,11 +46,18 @@ export class CourierService {
       filter.status = status;
     }
 
+    if (startDate) {
+      filter.createdAt = {$gte: startDate, $lt: endDate};
+    }
+
     const totalCount = await this.orderModel.find(filter).count().exec();
     const results = await this.orderModel.find(filter, {}, {
       limit,
       skip: offset
-    }).populate(["user", "courier", "store", "products.product"]).exec();
+    })
+      .sort('createdAt')
+      .populate(["user", "courier", "store", "products.product"])
+      .exec();
 
     return {
       totalCount,

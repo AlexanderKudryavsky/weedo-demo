@@ -35,6 +35,18 @@ export class CourierController {
     required: false
   })
   @ApiQuery({
+    name: "startDate",
+    type: Date,
+    required: false,
+    example: '2023-09-03T01:38:32.447Z'
+  })
+  @ApiQuery({
+    name: "endDate",
+    type: Date,
+    required: false,
+    example: '2023-09-03T01:38:32.447Z'
+  })
+  @ApiQuery({
     name: "offset",
     type: String,
     required: false
@@ -46,9 +58,11 @@ export class CourierController {
   findAll(
     @Param('id') id: string,
     @Query('status') status?: OrderStatuses,
+    @Query('startDate') startDate?: Date,
+    @Query('endDate') endDate?: Date,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    return this.courierService.findAll({courierId: id, status, limit, offset});
+    return this.courierService.findAll({courierId: id, status, limit, offset, startDate, endDate});
   }
 }

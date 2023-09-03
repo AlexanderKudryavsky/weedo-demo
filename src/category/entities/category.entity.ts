@@ -14,6 +14,10 @@ export class Category {
   name: string;
 
   @ApiProperty()
+  @Prop({type: mongoose.Schema.Types.String})
+  image: string;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()
