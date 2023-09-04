@@ -130,7 +130,7 @@ export class OrderService {
       limit,
       skip: offset
     })
-      .sort("createdAt")
+      .sort({ "createdAt": 1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 
@@ -154,12 +154,12 @@ export class OrderService {
       filter.status = status;
     }
 
-    const totalCount = await this.orderModel.find(filter).count().exec();
+    const totalCount = await this.orderModel.count(filter).exec();
     const results = await this.orderModel.find(filter, {}, {
       limit,
       skip: offset
     })
-      .sort("createdAt")
+      .sort({ "createdAt": 1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 
@@ -175,7 +175,7 @@ export class OrderService {
       limit,
       skip: offset
     })
-      .sort("createdAt")
+      .sort({ "createdAt": 1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 

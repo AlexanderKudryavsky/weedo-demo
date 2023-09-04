@@ -27,7 +27,7 @@ export class CourierService {
           $in: [OrderStatuses.Confirmed, OrderStatuses.WaitingForPickUp]
         }
       })
-      .sort("createdAt")
+      .sort({ "createdAt": 1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 
@@ -55,7 +55,7 @@ export class CourierService {
       limit,
       skip: offset
     })
-      .sort('createdAt')
+      .sort({ "createdAt": 1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 
