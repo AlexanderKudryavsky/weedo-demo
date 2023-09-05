@@ -190,12 +190,16 @@ export class OrderService {
     if (order.courier) {
       throw new BadRequestException('Courier already assigned');
     }
-    return this.orderModel.findByIdAndUpdate(id, {courier: assignCourierDto.courierId}, {new: true}).exec();
+    const updatedOrder = await this.orderModel.findByIdAndUpdate(id, {courier: assignCourierDto.courierId}, {new: true}).exec();
+
+    this.websocketsGateway.sendStatus({ orderId: updatedOrder._id, status: updatedOrder.status, courier: updatedOrder.courier });
+
+    return updatedOrder;
   };
 
   async updateStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto) {
     const order = await this.orderModel.findByIdAndUpdate(id, { status: updateOrderStatusDto.status }, {new: true}).populate(['user', 'courier']).exec();
-    this.websocketsGateway.sendStatus({ orderId: id, status: updateOrderStatusDto.status });
+    this.websocketsGateway.sendStatus({ orderId: id, status: updateOrderStatusDto.status, courier: order.courier });
     return order;
   }
 
@@ -227,7 +231,6 @@ export class OrderService {
     };
 
     if (startDate) {
-      console.log(12121212, match);
       match.$match.createdAt = {
         ...match.$match.createdAt,
         $gte: new Date(startDate),
@@ -235,23 +238,15 @@ export class OrderService {
     }
 
     if (endDate) {
-      console.log(21212121, match);
       match.$match.createdAt = {
         ...match.$match.createdAt,
         $lte: new Date(endDate),
       }
     }
-    console.log(23232323, match);
 
     aggregation.unshift(match);
 
-    console.log(111111111, aggregation);
-
-    // return aggregation
-
     const result = await this.orderModel.aggregate(aggregation) as Array<StoreReport>;
-
-    console.log(222222222, result);
 
     if (!result.length) {
       return {};
