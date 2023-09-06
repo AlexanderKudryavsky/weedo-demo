@@ -42,13 +42,17 @@ export class CourierService {
       courier: courierId,
     };
 
+    console.log(3333333, filter);
+
     if (status) {
       filter.status = status;
     }
 
-    if (startDate) {
+    if (startDate && endDate) {
       filter.createdAt = {$gte: startDate, $lt: endDate};
     }
+
+    console.log(44444444, filter);
 
     const totalCount = await this.orderModel.find(filter).count().exec();
     const results = await this.orderModel.find(filter, {}, {
@@ -58,6 +62,8 @@ export class CourierService {
       .sort({ "createdAt": 1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
+
+    console.log(55555555, results);
 
     return {
       totalCount,
