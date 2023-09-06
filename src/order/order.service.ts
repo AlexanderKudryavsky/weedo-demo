@@ -125,6 +125,8 @@ export class OrderService {
       filter.status = status;
     }
 
+    console.log(111111, filter);
+
     const totalCount = await this.orderModel.find(filter).count().exec();
     const results = await this.orderModel.find(filter, {}, {
       limit,
@@ -133,6 +135,8 @@ export class OrderService {
       .sort({ "createdAt": 1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
+
+    console.log(22222222, results);
 
     return {
       totalCount,
