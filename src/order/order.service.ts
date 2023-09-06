@@ -186,7 +186,7 @@ export class OrderService {
   }
 
   async assignCourier(id: string, assignCourierDto: AssignCourierDto) {
-    const order = await this.orderModel.findById(id).lean().exec()
+    const order = await this.orderModel.findById(id).lean().exec();
     if (order.courier) {
       throw new BadRequestException('Courier already assigned');
     }
