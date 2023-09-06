@@ -136,7 +136,7 @@ export class OrderService {
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 
-    console.log(22222222, results)
+    console.log(22222222, results);
 
     return {
       totalCount,
