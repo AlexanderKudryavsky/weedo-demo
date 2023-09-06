@@ -190,7 +190,7 @@ export class OrderService {
     if (order.courier) {
       throw new BadRequestException('Courier already assigned');
     }
-    const updatedOrder = await this.orderModel.findByIdAndUpdate(id, {courier: assignCourierDto.courierId}, {new: true}).exec();
+    const updatedOrder = await this.orderModel.findByIdAndUpdate(id, {courier: assignCourierDto.courierId}, {new: true}).populate(['courier']).exec();
 
     this.websocketsGateway.sendStatus({ orderId: updatedOrder._id, status: updatedOrder.status, courier: updatedOrder.courier });
 
