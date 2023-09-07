@@ -130,7 +130,7 @@ export class OrderService {
       limit,
       skip: offset
     })
-      .sort({ "createdAt": 1 })
+      .sort({ "createdAt": -1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 
@@ -159,7 +159,7 @@ export class OrderService {
       limit,
       skip: offset
     })
-      .sort({ "createdAt": 1 })
+      .sort({ "createdAt": -1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 
@@ -175,7 +175,7 @@ export class OrderService {
       limit,
       skip: offset
     })
-      .sort({ "createdAt": 1 })
+      .sort({ "createdAt": -1 })
       .populate(["user", "courier", "store", "products.product"])
       .exec();
 

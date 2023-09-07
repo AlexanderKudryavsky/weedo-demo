@@ -63,8 +63,6 @@ export class CourierController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    console.log(1111111, id);
-    console.log(222222, status, startDate, endDate, limit, offset);
     return this.courierService.findAll({courierId: id, status, limit, offset, startDate, endDate});
   }
 }
